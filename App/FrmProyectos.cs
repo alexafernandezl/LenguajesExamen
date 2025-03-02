@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
 using System.Data;
+using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -29,13 +30,21 @@ namespace App
             try
             {
                 this.dataGridView1.DataSource = _conexion.CargarProyectos();
+
+                if (dataGridView1.Columns["FechaDeInicio"].ValueType == typeof(DateTime))
+                {
+                    dataGridView1.Columns["FechaDeInicio"].DefaultCellStyle.Format = "dd/MM/yyyy";
+                }
+                if (dataGridView1.Columns["FechaDeFinEstimada"].ValueType == typeof(DateTime))
+                {
+                    dataGridView1.Columns["FechaDeFinEstimada"].DefaultCellStyle.Format = "dd/MM/yyyy";
+                }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al cargar los proyectos: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                throw ex;
             }
         }
-
         // Método para cerrar el formulario
         private void pb_CerrarProyectos_Click(object sender, EventArgs e)
         {
@@ -110,6 +119,83 @@ namespace App
             catch (Exception ex)
             {
                 MessageBox.Show($"Error al editar el proyecto: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btn_buscar_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string nombreBusqueda = txt_buscar.Text.Trim();
+
+                if (!string.IsNullOrEmpty(nombreBusqueda))
+                {
+                    DataTable dt = _conexion.BuscarEmpleadoNombre(nombreBusqueda);
+                    dataGridView1.DataSource = dt;
+                }
+                else
+                {
+                    // Si no hay texto, cargar todos los datos
+                    CargarDatos();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void txt_buscar_TextChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(txt_buscar.Text))
+                {
+                    // Si el TextBox está vacío, carga todos los empleados
+                    CargarDatos();
+                }
+                else
+                {
+                    // Buscar empleados por nombre parcial
+                    DataTable resultados = _conexion.BuscarProyectoPorNombre(txt_buscar.Text);
+
+                    if (resultados.Rows.Count > 0)
+                    {
+                        dataGridView1.DataSource = resultados;
+                    }
+                    else
+                    {
+                        dataGridView1.DataSource = null;
+                        MessageBox.Show("No se encontraron empleados con ese nombre.", "Búsqueda", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                }
+            }
+            catch (FormatException ex)
+            {
+                MessageBox.Show("El formato de búsqueda no es válido. " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ocurrió un error inesperado: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+
+        private void txt_buscar_Enter(object sender, EventArgs e)
+        {
+            if (txt_buscar.Text == "Buscar proyecto...")
+            {
+                txt_buscar.Text = "";
+                txt_buscar.ForeColor = Color.Black;
+            }
+        }
+
+        private void txt_buscar_Leave(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(txt_buscar.Text))
+            {
+                txt_buscar.Text = "Buscar proyecto...";
+                txt_buscar.ForeColor = Color.Gray;
             }
         }
     }

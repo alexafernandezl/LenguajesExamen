@@ -182,7 +182,9 @@ namespace DAL
                 throw ex;
             }
         }
-        public Proyectos BuscarProyectoPorNombre(String nombre)
+       
+
+        public DataTable BuscarProyectoPorNombre(string nombre)
         {
             try
             {
@@ -191,32 +193,39 @@ namespace DAL
                 _command = new SqlCommand();
                 _command.Connection = _conexion;
                 _command.CommandType = CommandType.StoredProcedure;
-                _command.CommandText = "[Sp_Buscar_Proyecto_Nombre]";
-                _command.Parameters.AddWithValue("@NombreProyecto", nombre);
-                _reader = _command.ExecuteReader();
-                Proyectos temp = null;
-                if (_reader.Read())
+
+                // Si el nombre está vacío, carga todos los empleados
+                if (string.IsNullOrWhiteSpace(nombre))
                 {
-                    temp = new Proyectos();
-                    temp.IdProyecto = int.Parse(_reader.GetValue(0).ToString());
-                    temp.NombreProyecto = _reader.GetValue(1).ToString();
-                    temp.FechaDeInicio = DateTime.Parse(_reader.GetValue(2).ToString());
-                    temp.FechaDeFinEstimada = DateTime.Parse(_reader.GetValue(3).ToString());
-                    temp.Estado = _reader.GetValue(4).ToString();
-                    temp.Descripcion = _reader.GetValue(5).ToString();
-                    temp.Presupuesto = decimal.Parse(_reader.GetValue(6).ToString());
-                    temp.IdResponsable = int.Parse(_reader.GetValue(7).ToString());
+                    _command.CommandText = "[Sp_Proyectos]";
                 }
+                else
+                {
+                    _command.CommandText = "[Sp_Buscar_Proyecto_Nombre]";
+                    _command.Parameters.AddWithValue("@NombreProyecto", nombre);
+                }
+
+                SqlDataAdapter adapter = new SqlDataAdapter();
+                DataTable datos = new DataTable();
+                adapter.SelectCommand = _command;
+                adapter.Fill(datos);
+
                 _conexion.Close();
                 _conexion.Dispose();
                 _command.Dispose();
-                return temp;
+                adapter.Dispose();
+
+                return datos;
             }
             catch (Exception ex)
             {
                 throw ex;
             }
-        }//Fin de BuscarProyecto por id
+        }
+
+
+
+
         #endregion
         //---------------------------------------------------------------------
         //CRUD Empleados

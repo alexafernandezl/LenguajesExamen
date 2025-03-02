@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
+            this.cbResponsable = new System.Windows.Forms.ComboBox();
             this.label3 = new System.Windows.Forms.Label();
             this.txt_Descripcion = new System.Windows.Forms.RichTextBox();
             this.txt_Presupuesto = new System.Windows.Forms.TextBox();
@@ -44,7 +45,6 @@
             this.incioLabel = new System.Windows.Forms.Label();
             this.txt_NombreProyecto = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.cbResponsable = new System.Windows.Forms.ComboBox();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -73,6 +73,16 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(1011, 840);
             this.panel1.TabIndex = 4;
+            // 
+            // cbResponsable
+            // 
+            this.cbResponsable.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbResponsable.FormattingEnabled = true;
+            this.cbResponsable.Location = new System.Drawing.Point(246, 244);
+            this.cbResponsable.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.cbResponsable.Name = "cbResponsable";
+            this.cbResponsable.Size = new System.Drawing.Size(242, 28);
+            this.cbResponsable.TabIndex = 23;
             // 
             // label3
             // 
@@ -120,7 +130,7 @@
             this.cb_Estado.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cb_Estado.FormattingEnabled = true;
             this.cb_Estado.Items.AddRange(new object[] {
-            "Pendiente por defecto",
+            "Pendiente",
             "Aprobado",
             "En Progreso",
             "Completado",
@@ -134,8 +144,10 @@
             // cal_finEstimada
             // 
             this.cal_finEstimada.Location = new System.Drawing.Point(522, 352);
-            this.cal_finEstimada.Margin = new System.Windows.Forms.Padding(14, 14, 14, 14);
+            this.cal_finEstimada.Margin = new System.Windows.Forms.Padding(14);
             this.cal_finEstimada.Name = "cal_finEstimada";
+            this.cal_finEstimada.ShowToday = false;
+            this.cal_finEstimada.ShowTodayCircle = false;
             this.cal_finEstimada.TabIndex = 16;
             // 
             // finLabel
@@ -175,8 +187,10 @@
             // cal_Inicio
             // 
             this.cal_Inicio.Location = new System.Drawing.Point(522, 51);
-            this.cal_Inicio.Margin = new System.Windows.Forms.Padding(14, 14, 14, 14);
+            this.cal_Inicio.Margin = new System.Windows.Forms.Padding(14);
             this.cal_Inicio.Name = "cal_Inicio";
+            this.cal_Inicio.ShowToday = false;
+            this.cal_Inicio.ShowTodayCircle = false;
             this.cal_Inicio.TabIndex = 11;
             // 
             // label_telefono
@@ -234,16 +248,6 @@
             this.label1.Size = new System.Drawing.Size(218, 25);
             this.label1.TabIndex = 0;
             this.label1.Text = "Nombre del proyecto:";
-            // 
-            // cbResponsable
-            // 
-            this.cbResponsable.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cbResponsable.FormattingEnabled = true;
-            this.cbResponsable.Location = new System.Drawing.Point(246, 244);
-            this.cbResponsable.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.cbResponsable.Name = "cbResponsable";
-            this.cbResponsable.Size = new System.Drawing.Size(242, 28);
-            this.cbResponsable.TabIndex = 23;
             // 
             // FormAddProyectos
             // 

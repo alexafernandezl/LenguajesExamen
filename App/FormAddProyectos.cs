@@ -24,8 +24,8 @@ namespace App
                 CargarDatos(); // Carga los datos del proyecto si existe
 
             txt_Presupuesto.KeyPress += ValidarEntradaDecimal;//No se puede insertar letras 
-            cal_Inicio.SetDate(DateTime.Today.AddDays(0));//La fecha inicia en el dia de hoy
-            cal_finEstimada.SetDate(DateTime.Today.AddDays(365));//La fecha finaliza un annio despues   
+            //cal_Inicio.SetDate(DateTime.Today.AddDays(0));//La fecha inicia en el dia de hoy
+            //cal_finEstimada.SetDate(DateTime.Today.AddDays(365));//La fecha finaliza un annio despues   
             cal_Inicio.DateChanged += ValidarFechas;//Para validad que sea menor
             cal_finEstimada.DateChanged += ValidarFechas;//Para validad que sea mayor
             this.frmProyectos = frmProyectos;
@@ -40,6 +40,7 @@ namespace App
             cb_Estado.SelectedItem = proyectoMain.Estado;
             txt_Descripcion.Text = proyectoMain.Descripcion;
             cbResponsable.SelectedValue = proyectoMain.IdResponsable;
+            cal_Inicio.SetDate(this.proyectoMain.FechaDeInicio);
         }
 
         // Método para cargar la lista de empleados en el ComboBox
@@ -63,7 +64,7 @@ namespace App
             if (cal_Inicio.SelectionStart > cal_finEstimada.SelectionStart)
             {
 
-                MessageBox.Show("La fecha de inicio no puede ser mayor que la fecha de fin estimada.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("La fecha de inicio no puede ser mayor que la fecha de fin estimada. Se recomienda eligir pimero la fecha final", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 cal_Inicio.SetDate(DateTime.Today.AddDays(0));
             }
         }

@@ -19,14 +19,12 @@ namespace App
         {
             InitializeComponent();
             _conexion = new Conexion(ConfigurationManager.ConnectionStrings["StringConexion"].ConnectionString);
-            CargarDatos();
+            CargarDatos();// Cargar los datos de los proyectos al iniciar el formulario
         }
 
-        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
+        // Método para cargar los proyectos en el DataGridView
 
-        }
-        private void CargarDatos()
+        public void CargarDatos()
         {
             try
             {
@@ -34,52 +32,84 @@ namespace App
             }
             catch (Exception ex)
             {
-                throw ex;
+                MessageBox.Show($"Error al cargar los proyectos: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
+        // Método para cerrar el formulario
         private void pb_CerrarProyectos_Click(object sender, EventArgs e)
         {
             this.Close();
         }
 
-      
 
-        private void eliminarToolStripMenuItem_Click(object sender, EventArgs e)
+        // Método para eliminar un proyecto con confirmación y validación de dependencia con tareas
+       
+       private void eliminarToolStripMenuItem_Click(object sender, EventArgs e)
         {
             try
             {
                 if (this.dataGridView1.SelectedRows.Count > 0)
                 {
-                    _conexion.EliminarProyecto(int.Parse(this.dataGridView1.SelectedRows[0].Cells["IdProyecto"].Value.ToString()));
-                    CargarDatos();
+                    int idProyecto = int.Parse(this.dataGridView1.SelectedRows[0].Cells["IdProyecto"].Value.ToString());
+
+                    // Verificar si existen tareas asociadas a este proyecto
+                    DataTable tareas = _conexion.CargarTareas();
+                    bool tieneTareas = tareas.AsEnumerable().Any(row => row.Field<int>("IdProyecto") == idProyecto);
+
+                    if (tieneTareas)
+                    {
+                        MessageBox.Show("No se puede eliminar el proyecto porque tiene tareas asociadas.", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    // Confirmación antes de eliminar
+                    DialogResult resultado = MessageBox.Show("¿Está seguro que desea eliminar este proyecto?", "Confirmación", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    if (resultado == DialogResult.Yes)
+                    {
+                        _conexion.EliminarProyecto(idProyecto);
+                        CargarDatos();
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Seleccione un proyecto para eliminar.", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
             catch (Exception ex)
             {
-                throw ex;
+                MessageBox.Show($"Error al eliminar el proyecto: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
         private void btn_Agregar_Click(object sender, EventArgs e)
         {
-                FrmPrincipal.MostrarAddFrame(new FormAddProyectos(0));
+            FormAddProyectos frm = new FormAddProyectos(0, this); // Pasamos la referencia
+            frm.ShowDialog();
         }
-       
 
-        private void editarToolStripMenuItem_Click(object sender, EventArgs e)
+
+        // Método para editar un proyecto existente
+
+       private void editarToolStripMenuItem_Click(object sender, EventArgs e)
         {
             try
             {
                 if (this.dataGridView1.SelectedRows.Count > 0)
                 {
                     int id = int.Parse(this.dataGridView1.SelectedRows[0].Cells["IdProyecto"].Value.ToString());
-                    FrmPrincipal.MostrarAddFrame(new FormAddProyectos(id));
+                    FormAddProyectos frm = new FormAddProyectos(id, this);
+                    
+                    frm.Show();
+                }
+                else
+                {
+                    MessageBox.Show("Seleccione un proyecto para editar.", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
             catch (Exception ex)
             {
-                throw ex;
+                MessageBox.Show($"Error al editar el proyecto: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }

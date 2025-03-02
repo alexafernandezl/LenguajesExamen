@@ -156,7 +156,9 @@ namespace App
             this.Close();
         }
 
-       
-        
+        private void cbResponsable_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }

@@ -67,7 +67,7 @@ namespace App
 
         private void btn_Agregar_Click(object sender, EventArgs e)
         {
-            FrmPrincipal.MostrarAddFrame(new FrmAddRecursos(0));
+            FrmPrincipal.MostrarAddFrame(new FrmAddTareas(0));
         }
 
         private void editarToolStripMenuItem_Click(object sender, EventArgs e)
@@ -77,7 +77,7 @@ namespace App
                 if (this.dataGridView1.SelectedRows.Count > 0)
                 {
                     int id = int.Parse(this.dataGridView1.SelectedRows[0].Cells["IdTarea"].Value.ToString());
-                    FrmPrincipal.MostrarAddFrame(new FrmAddRecursos(id));
+                    FrmPrincipal.MostrarAddFrame(new FrmAddTareas(id));
                 }
             }
             catch (Exception ex)

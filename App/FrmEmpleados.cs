@@ -115,41 +115,16 @@ namespace App
             }
         }
 
-        private void btn_buscar_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                string nombreBusqueda = txt_buscar.Text.Trim();
-
-                if (!string.IsNullOrEmpty(nombreBusqueda))
-                {
-                    DataTable dt = _conexion.BuscarEmpleadoNombre(nombreBusqueda);
-                    dataGridView1.DataSource = dt;
-                }
-                else
-                {
-                    // Si no hay texto, cargar todos los datos
-                    CargarDatos();
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
         private void txt_buscar_TextChanged(object sender, EventArgs e)
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(txt_buscar.Text))
+                if (string.IsNullOrWhiteSpace(txt_buscar.Text) || txt_buscar.Text == "Buscar empleado...")
                 {
-                    // Si el TextBox está vacío, carga todos los empleados
                     CargarDatos();
                 }
                 else
                 {
-                    // Buscar empleados por nombre parcial
                     DataTable resultados = _conexion.BuscarEmpleadoNombre(txt_buscar.Text);
 
                     if (resultados.Rows.Count > 0)
@@ -159,6 +134,7 @@ namespace App
                     else
                     {
                         dataGridView1.DataSource = null;
+
                         MessageBox.Show("No se encontraron empleados con ese nombre.", "Búsqueda", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                 }
@@ -182,7 +158,6 @@ namespace App
                 txt_buscar.ForeColor = Color.Black;
             }
         }
-
         private void txt_buscar_Leave(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txt_buscar.Text))
@@ -191,6 +166,7 @@ namespace App
                 txt_buscar.ForeColor = Color.Gray;
             }
         }
+
 
     }
 }

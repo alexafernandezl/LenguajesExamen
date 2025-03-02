@@ -647,7 +647,62 @@ namespace DAL
         //CRUD Tareas
         //---------------------------------------------------------------------
         #region Tareas
-       
+
+        public bool ExisteTareaPendienteConMayorPrioridad(Tareas tarea)
+        {
+            _conexion = new SqlConnection(StringConexion); _conexion.Open();
+            _command = new SqlCommand("[Sp_Validar_Prioridad_Tareas]", _conexion); _command.CommandType = CommandType.StoredProcedure;
+            _command.Parameters.AddWithValue("@FechaInicio", tarea.FechaInicio); _command.Parameters.AddWithValue("@Prioridad", tarea.Prioridad);
+            bool existe = Convert.ToBoolean(_command.ExecuteScalar()); _conexion.Close();
+            return existe;
+        }//Fin de ExisteTareaPendienteConMayorPrioridad
+        public bool EmpleadoTieneConflictoDeHorario(int idEmpleado, DateTime fechaInicio, DateTime fechaFin)
+        {
+            _conexion = new SqlConnection(StringConexion);
+            _conexion.Open();
+            _command = new SqlCommand("[Sp_Verificar_Conflicto_Empleado]", _conexion);
+            _command.CommandType = CommandType.StoredProcedure;
+            _command.Parameters.AddWithValue("@IdEmpleado", idEmpleado);
+            _command.Parameters.AddWithValue("@FechaInicio", fechaInicio);
+            _command.Parameters.AddWithValue("@FechaFin", fechaFin);
+            bool conflicto = Convert.ToBoolean(_command.ExecuteScalar());
+            _conexion.Close();
+            return conflicto;
+        }//fin de EmpleadoTieneConflictoDeHorario
+        public bool ValidarDisponibilidadRecurso(int idRecurso, int cantidadRequerida)
+        {
+            _conexion = new SqlConnection(StringConexion); _conexion.Open();
+            _command = new SqlCommand("[Sp_Validar_Recurso]", _conexion); _command.CommandType = CommandType.StoredProcedure;
+            _command.Parameters.AddWithValue("@IdRecurso", idRecurso); _command.Parameters.AddWithValue("@CantidadRequerida", cantidadRequerida);
+            var disponible = Convert.ToBoolean(_command.ExecuteScalar()); _conexion.Close();
+            return disponible;
+        }//Fin de ValidarDisponibilidadRecurso
+        public string RolResponsable(int id)
+        {
+            try
+            {
+                using (SqlConnection _conexion = new SqlConnection(StringConexion))
+                {
+                    _conexion.Open(); using (SqlCommand _command = new SqlCommand("[Sp_Buscar_Empleado_Id]", _conexion))
+                    {
+                        _command.CommandType = CommandType.StoredProcedure;
+                        _command.Parameters.AddWithValue("@IdEmpleado", id);
+                        using (SqlDataReader _reader = _command.ExecuteReader())
+                        {
+                            if (_reader.Read())
+                            {
+                                return _reader.GetValue(6).ToString(); // Suponiendo que la columna 6 es el Rol                     }
+                            }
+                        }
+                    }
+                    return null;
+                }// Si no se encontró el empleado     }
+            }
+            catch (Exception)
+            {
+                throw; // Mantiene el stack trace original     }
+            }
+        }
         public DataTable CargarTareas()
         {
             try

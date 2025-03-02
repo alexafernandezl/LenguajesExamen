@@ -31,11 +31,8 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.txt_cantidad = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
-            this.txt_recurso = new System.Windows.Forms.TextBox();
             this.label_recurso = new System.Windows.Forms.Label();
-            this.txt_idResponsable = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
-            this.txt_idProyecto = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.cb_requiere = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -51,19 +48,22 @@
             this.label_telefono = new System.Windows.Forms.Label();
             this.label_correo = new System.Windows.Forms.Label();
             this.incioLabel = new System.Windows.Forms.Label();
+            this.cb_idProyecto = new System.Windows.Forms.ComboBox();
+            this.cb_idResponsable = new System.Windows.Forms.ComboBox();
+            this.cb_idRecurso = new System.Windows.Forms.ComboBox();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.panel1.Controls.Add(this.cb_idRecurso);
+            this.panel1.Controls.Add(this.cb_idResponsable);
+            this.panel1.Controls.Add(this.cb_idProyecto);
             this.panel1.Controls.Add(this.txt_cantidad);
             this.panel1.Controls.Add(this.label6);
-            this.panel1.Controls.Add(this.txt_recurso);
             this.panel1.Controls.Add(this.label_recurso);
-            this.panel1.Controls.Add(this.txt_idResponsable);
             this.panel1.Controls.Add(this.label4);
-            this.panel1.Controls.Add(this.txt_idProyecto);
             this.panel1.Controls.Add(this.label3);
             this.panel1.Controls.Add(this.cb_requiere);
             this.panel1.Controls.Add(this.label1);
@@ -90,6 +90,7 @@
             this.txt_cantidad.Name = "txt_cantidad";
             this.txt_cantidad.Size = new System.Drawing.Size(163, 20);
             this.txt_cantidad.TabIndex = 33;
+            this.txt_cantidad.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txt_cantidad_KeyPress);
             // 
             // label6
             // 
@@ -102,13 +103,6 @@
             this.label6.TabIndex = 32;
             this.label6.Text = "Cantidad:";
             // 
-            // txt_recurso
-            // 
-            this.txt_recurso.Location = new System.Drawing.Point(169, 248);
-            this.txt_recurso.Name = "txt_recurso";
-            this.txt_recurso.Size = new System.Drawing.Size(163, 20);
-            this.txt_recurso.TabIndex = 29;
-            // 
             // label_recurso
             // 
             this.label_recurso.AutoSize = true;
@@ -116,16 +110,9 @@
             this.label_recurso.ForeColor = System.Drawing.SystemColors.Control;
             this.label_recurso.Location = new System.Drawing.Point(12, 252);
             this.label_recurso.Name = "label_recurso";
-            this.label_recurso.Size = new System.Drawing.Size(86, 16);
+            this.label_recurso.Size = new System.Drawing.Size(69, 16);
             this.label_recurso.TabIndex = 28;
-            this.label_recurso.Text = "Id Recurso:";
-            // 
-            // txt_idResponsable
-            // 
-            this.txt_idResponsable.Location = new System.Drawing.Point(169, 209);
-            this.txt_idResponsable.Name = "txt_idResponsable";
-            this.txt_idResponsable.Size = new System.Drawing.Size(163, 20);
-            this.txt_idResponsable.TabIndex = 27;
+            this.label_recurso.Text = "Recurso:";
             // 
             // label4
             // 
@@ -134,16 +121,9 @@
             this.label4.ForeColor = System.Drawing.SystemColors.Control;
             this.label4.Location = new System.Drawing.Point(12, 209);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(121, 16);
+            this.label4.Size = new System.Drawing.Size(108, 16);
             this.label4.TabIndex = 26;
-            this.label4.Text = "Id Responsable:";
-            // 
-            // txt_idProyecto
-            // 
-            this.txt_idProyecto.Location = new System.Drawing.Point(169, 169);
-            this.txt_idProyecto.Name = "txt_idProyecto";
-            this.txt_idProyecto.Size = new System.Drawing.Size(163, 20);
-            this.txt_idProyecto.TabIndex = 25;
+            this.label4.Text = " Responsable:";
             // 
             // label3
             // 
@@ -152,12 +132,14 @@
             this.label3.ForeColor = System.Drawing.SystemColors.Control;
             this.label3.Location = new System.Drawing.Point(12, 169);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(90, 16);
+            this.label3.Size = new System.Drawing.Size(73, 16);
             this.label3.TabIndex = 24;
-            this.label3.Text = "Id Proyecto:";
+            this.label3.Text = "Proyecto:";
+            this.label3.Click += new System.EventHandler(this.label3_Click);
             // 
             // cb_requiere
             // 
+            this.cb_requiere.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cb_requiere.FormattingEnabled = true;
             this.cb_requiere.Items.AddRange(new object[] {
             "Gerente",
@@ -183,6 +165,7 @@
             // 
             // cb_Prioridad
             // 
+            this.cb_Prioridad.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cb_Prioridad.FormattingEnabled = true;
             this.cb_Prioridad.Items.AddRange(new object[] {
             "Baja ",
@@ -214,6 +197,7 @@
             // 
             // cb_Estado
             // 
+            this.cb_Estado.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cb_Estado.FormattingEnabled = true;
             this.cb_Estado.Items.AddRange(new object[] {
             "Pendiente por defecto",
@@ -302,6 +286,35 @@
             this.incioLabel.TabIndex = 3;
             this.incioLabel.Text = "Fecha de inicio:";
             // 
+            // cb_idProyecto
+            // 
+            this.cb_idProyecto.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cb_idProyecto.FormattingEnabled = true;
+            this.cb_idProyecto.Location = new System.Drawing.Point(169, 168);
+            this.cb_idProyecto.Name = "cb_idProyecto";
+            this.cb_idProyecto.Size = new System.Drawing.Size(163, 21);
+            this.cb_idProyecto.TabIndex = 34;
+            this.cb_idProyecto.SelectedIndexChanged += new System.EventHandler(this.cb_idProyecto_SelectedIndexChanged);
+            // 
+            // cb_idResponsable
+            // 
+            this.cb_idResponsable.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cb_idResponsable.FormattingEnabled = true;
+            this.cb_idResponsable.Location = new System.Drawing.Point(169, 208);
+            this.cb_idResponsable.Name = "cb_idResponsable";
+            this.cb_idResponsable.Size = new System.Drawing.Size(163, 21);
+            this.cb_idResponsable.TabIndex = 35;
+            this.cb_idResponsable.SelectedIndexChanged += new System.EventHandler(this.cb_IdResponsable_SelectedIndex_Changed);
+            // 
+            // cb_idRecurso
+            // 
+            this.cb_idRecurso.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cb_idRecurso.FormattingEnabled = true;
+            this.cb_idRecurso.Location = new System.Drawing.Point(169, 247);
+            this.cb_idRecurso.Name = "cb_idRecurso";
+            this.cb_idRecurso.Size = new System.Drawing.Size(163, 21);
+            this.cb_idRecurso.TabIndex = 36;
+            // 
             // FrmAddTareas
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -322,11 +335,8 @@
         #endregion
 
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.TextBox txt_recurso;
         private System.Windows.Forms.Label label_recurso;
-        private System.Windows.Forms.TextBox txt_idResponsable;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.TextBox txt_idProyecto;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.ComboBox cb_requiere;
         private System.Windows.Forms.Label label1;
@@ -344,5 +354,8 @@
         private System.Windows.Forms.Label incioLabel;
         private System.Windows.Forms.TextBox txt_cantidad;
         private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.ComboBox cb_idRecurso;
+        private System.Windows.Forms.ComboBox cb_idResponsable;
+        private System.Windows.Forms.ComboBox cb_idProyecto;
     }
 }

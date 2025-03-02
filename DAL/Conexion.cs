@@ -79,7 +79,8 @@ namespace DAL
                 _conexion.Dispose();
                 _command.Dispose();
 
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 throw ex;
             }
@@ -140,7 +141,7 @@ namespace DAL
                 _conexion.Dispose();
                 _command.Dispose();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw ex;
             }
@@ -181,7 +182,7 @@ namespace DAL
                 throw ex;
             }
         }
-        public Proyectos BuscarProyectoPorNombre (String nombre)
+        public Proyectos BuscarProyectoPorNombre(String nombre)
         {
             try
             {
@@ -217,7 +218,6 @@ namespace DAL
             }
         }//Fin de BuscarProyecto por id
         #endregion
-
         //---------------------------------------------------------------------
         //CRUD Empleados
         //---------------------------------------------------------------------

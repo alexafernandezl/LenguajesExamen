@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BLL;
 
+
 namespace DAL
 {
     public class Conexion
@@ -319,6 +320,34 @@ namespace DAL
                 throw new Exception("Error al calcular el costo total de los recursos: " + ex.Message);
             }
         }
+
+
+        public bool VerificarDisponibilidadEmpleado(int idEmpleado, DateTime fechaInicio, DateTime fechaFin, int idProyecto )
+        {
+            try
+            {
+                using (_conexion = new SqlConnection(StringConexion))
+                {
+                    _conexion.Open();
+                    using (_command = new SqlCommand("[Sp_Verificar_Asignacion_Empleado]", _conexion))
+                    {
+                        _command.CommandType = CommandType.StoredProcedure;
+                        _command.Parameters.AddWithValue("@IdEmpleado", idEmpleado);
+                        _command.Parameters.AddWithValue("@FechaInicio", fechaInicio);
+                        _command.Parameters.AddWithValue("@FechaFin", fechaFin);
+                        _command.Parameters.AddWithValue("@IdProyecto", idProyecto);
+
+                        int count = Convert.ToInt32(_command.ExecuteScalar());
+                        return count > 0; // Retorna true si hay solapamiento
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al verificar solapamiento de empleado en proyectos: " + ex.Message);
+            }
+        }
+
 
 
         #endregion

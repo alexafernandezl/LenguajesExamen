@@ -75,19 +75,23 @@ namespace App
             switch (estadoActual)
             {
                 case "Pendiente":
+                    cb_Estado.Items.Add("Pendiente");
                     cb_Estado.Items.Add("Aprobado");
                     cb_Estado.Items.Add("En Progreso");
                     cb_Estado.Items.Add("Cancelado");
                     break;
                 case "Aprobado":
+                    cb_Estado.Items.Add("Aprobado");
                     cb_Estado.Items.Add("En Progreso");
                     cb_Estado.Items.Add("Cancelado");
                     break;
                 case "En Progreso":
+                    cb_Estado.Items.Add("En Progreso");
                     cb_Estado.Items.Add("Completado");
                     cb_Estado.Items.Add("Cancelado");
                     break;
                 case "Completado":
+                    cb_Estado.Items.Add("Completado");
                     cb_Estado.Items.Add("Cancelado");
                     break;
                 case "Cancelado":
@@ -120,7 +124,7 @@ namespace App
         {
             if (cal_Inicio.SelectionStart > cal_finEstimada.SelectionStart)
             {
-                MessageBox.Show("La fecha de inicio no puede ser mayor que la fecha de fin estimada.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("La fecha de inicio no puede ser mayor que la fecha de fin estimada. Se recomienda escoger primero la fecha final", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 cal_Inicio.SetDate(DateTime.Today);
             }
         }
@@ -183,7 +187,7 @@ namespace App
                 DialogResult confirmacion = MessageBox.Show("Todas las tareas se cancelarán y los recursos se liberarán. ¿Desea continuar?", "Confirmación", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
                 if (confirmacion == DialogResult.Yes)
                 {
-                    _conexion.CancelarTareasAsociadas(proyectoMain.IdProyecto);
+                    //_conexion.CancelarTareasAsociadas(proyectoMain.IdProyecto);
                     //_conexion.LiberarRecursos(proyectoMain.IdProyecto);
                     MessageBox.Show("Tareas canceladas y recursos liberados.", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
@@ -219,6 +223,23 @@ namespace App
             }
         }
 
+        private void cbResponsable_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cbResponsable.SelectedIndex > 0)
+            {
+                int idEmpleado = Convert.ToInt32(cbResponsable.SelectedValue);
+                DateTime fechaInicio = cal_Inicio.SelectionStart;
+                DateTime fechaFin = cal_finEstimada.SelectionStart;
+                int idProyecto = proyectoMain?.IdProyecto ?? 0;
+
+                if (_conexion.VerificarDisponibilidadEmpleado(idEmpleado, fechaInicio, fechaFin, idProyecto))
+                {
+                    MessageBox.Show("Este empleado ya está asignado a otro proyecto con fechas solapadas. " +
+                        "Por favor, ajuste las fechas o seleccione otro responsable.", "Conflicto de asignación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    cbResponsable.SelectedIndex = 0;
+                }
+            }
+        }
 
 
         private void btn_Guardar_Click(object sender, EventArgs e)
@@ -226,6 +247,31 @@ namespace App
             try
             {
                 if (!ValidarCampos()) return;
+
+             
+
+                    // Validar que el estado no sea "Cancelado" ni "Completado"
+                    string estadoSeleccionado = cb_Estado.SelectedItem.ToString();
+                if (estadoSeleccionado == "Cancelado" || estadoSeleccionado == "Completado")
+                {
+                    MessageBox.Show("No puede asignar un empleado a un proyecto cancelado o completado.",
+                        "Estado inválido", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // Validar solapamiento antes de guardar
+                int idEmpleado = Convert.ToInt32(cbResponsable.SelectedValue);
+                DateTime fechaInicio = cal_Inicio.SelectionStart;
+                DateTime fechaFin = cal_finEstimada.SelectionStart;
+                int idProyecto = proyectoMain?.IdProyecto ?? 0;
+
+                if (_conexion.VerificarDisponibilidadEmpleado(idEmpleado, fechaInicio, fechaFin, idProyecto))
+                {
+                    MessageBox.Show("Este empleado ya está asignado a otro proyecto con fechas solapadas. " +
+                        "Por favor, reajuste las fechas o seleccione otro responsable.",
+                        "Conflicto de asignación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
 
                 string mensaje = proyectoMain != null
                     ? "¿Está seguro de que desea modificar este proyecto?"
@@ -238,11 +284,11 @@ namespace App
                 {
                     NombreProyecto = txt_NombreProyecto.Text,
                     Presupuesto = decimal.Parse(txt_Presupuesto.Text, CultureInfo.InvariantCulture),
-                    FechaDeFinEstimada = cal_finEstimada.SelectionStart,
-                    FechaDeInicio = cal_Inicio.SelectionStart,
-                    Estado = cb_Estado.SelectedItem.ToString(),
+                    FechaDeFinEstimada = fechaFin,
+                    FechaDeInicio = fechaInicio,
+                    Estado = estadoSeleccionado,
                     Descripcion = txt_Descripcion.Text,
-                    IdResponsable = Convert.ToInt32(cbResponsable.SelectedValue),
+                    IdResponsable = idEmpleado,
                 };
 
                 if (proyectoMain != null)
@@ -254,7 +300,11 @@ namespace App
                 {
                     _conexion.GuardarProyecto(temp);
                 }
-
+                if (estadoSeleccionado == "Cancelado")
+                {
+                    _conexion.CancelarTareasAsociadas(temp.IdProyecto);
+                    MessageBox.Show("Todas las tareas del proyecto han sido canceladas.", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
                 frmProyectos.CargarDatos();
                 this.Close();
             }
@@ -263,6 +313,7 @@ namespace App
                 MessageBox.Show($"Ocurrió un error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
 
         private void btn_Cancelar_Click(object sender, EventArgs e)
         {

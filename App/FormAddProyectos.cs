@@ -252,12 +252,7 @@ namespace App
 
                     // Validar que el estado no sea "Cancelado" ni "Completado"
                     string estadoSeleccionado = cb_Estado.SelectedItem.ToString();
-                if (estadoSeleccionado == "Cancelado" || estadoSeleccionado == "Completado")
-                {
-                    MessageBox.Show("No puede asignar un empleado a un proyecto cancelado o completado.",
-                        "Estado inválido", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
+               
 
                 // Validar solapamiento antes de guardar
                 int idEmpleado = Convert.ToInt32(cbResponsable.SelectedValue);

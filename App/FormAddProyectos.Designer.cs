@@ -81,6 +81,7 @@
             this.cbResponsable.Name = "cbResponsable";
             this.cbResponsable.Size = new System.Drawing.Size(163, 21);
             this.cbResponsable.TabIndex = 23;
+            this.cbResponsable.SelectedIndexChanged += new System.EventHandler(this.cbResponsable_SelectedIndexChanged);
             // 
             // label3
             // 
@@ -181,6 +182,7 @@
             this.cal_Inicio.ShowToday = false;
             this.cal_Inicio.ShowTodayCircle = false;
             this.cal_Inicio.TabIndex = 11;
+            this.cal_Inicio.TodayDate = new System.DateTime(2025, 3, 2, 0, 0, 0, 0);
             // 
             // label_telefono
             // 

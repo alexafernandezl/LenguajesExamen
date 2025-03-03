@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using BLL;
 
+
 namespace DAL
 {
     public class Conexion
@@ -290,6 +291,62 @@ namespace DAL
             catch (Exception ex)
             {
                 throw new Exception($"Error al liberar recursos del proyecto: {ex.Message}");
+            }
+        }
+
+        public decimal CalcularCostoTotalRecursos(int idProyecto)
+        {
+            try
+            {
+                _conexion = new SqlConnection(StringConexion);
+                _conexion.Open();
+                _command = new SqlCommand("[Sp_Calcular_Costo_Recursos_Proyecto]", _conexion);
+                _command.CommandType = CommandType.StoredProcedure;
+
+                _command.Parameters.AddWithValue("@IdProyecto", idProyecto);
+
+                SqlParameter outputParam = new SqlParameter("@CostoTotal", SqlDbType.Decimal);
+                outputParam.Direction = ParameterDirection.Output;
+                _command.Parameters.Add(outputParam);
+
+                _command.ExecuteNonQuery();
+                _conexion.Close();
+                _conexion.Dispose();
+                _command.Dispose();
+
+                return (outputParam.Value != DBNull.Value) ? Convert.ToDecimal(outputParam.Value) : 0;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al calcular el costo total de los recursos: " + ex.Message);
+            }
+        }
+
+
+        public bool VerificarDisponibilidadEmpleado(int idEmpleado, DateTime fechaInicio, DateTime fechaFin, int idProyecto )
+        {
+            try
+            {
+                using (_conexion = new SqlConnection(StringConexion))
+                {
+                    _conexion.Open();
+                    using (_command = new SqlCommand("[Sp_Verificar_Asignacion_Empleado]", _conexion))
+                    {
+                        _command.CommandType = CommandType.StoredProcedure;
+                        _command.Parameters.AddWithValue("@IdEmpleado", idEmpleado);
+                        _command.Parameters.AddWithValue("@FechaInicio", fechaInicio);
+                        _command.Parameters.AddWithValue("@FechaFin", fechaFin);
+                        _command.Parameters.AddWithValue("@IdProyecto", idProyecto);
+
+                        int count = Convert.ToInt32(_command.ExecuteScalar());
+                        return count > 0; // Retorna true si hay solapamiento
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al verificar solapamiento de empleado en proyectos: " + ex.Message);
+
             }
         }
 

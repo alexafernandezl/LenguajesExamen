@@ -292,6 +292,33 @@ namespace DAL
             }
         }
 
+        public decimal CalcularCostoTotalRecursos(int idProyecto)
+        {
+            try
+            {
+                _conexion = new SqlConnection(StringConexion);
+                _conexion.Open();
+                _command = new SqlCommand("[Sp_Calcular_Costo_Recursos_Proyecto]", _conexion);
+                _command.CommandType = CommandType.StoredProcedure;
+
+                _command.Parameters.AddWithValue("@IdProyecto", idProyecto);
+
+                SqlParameter outputParam = new SqlParameter("@CostoTotal", SqlDbType.Decimal);
+                outputParam.Direction = ParameterDirection.Output;
+                _command.Parameters.Add(outputParam);
+
+                _command.ExecuteNonQuery();
+                _conexion.Close();
+                _conexion.Dispose();
+                _command.Dispose();
+
+                return (outputParam.Value != DBNull.Value) ? Convert.ToDecimal(outputParam.Value) : 0;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al calcular el costo total de los recursos: " + ex.Message);
+            }
+        }
 
 
         #endregion

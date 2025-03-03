@@ -149,7 +149,7 @@ namespace App
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(txt_buscar.Text) || txt_buscar.Text == "Buscar empleado...")
+                if (string.IsNullOrWhiteSpace(txt_buscar.Text) || txt_buscar.Text == "Buscar proyecto...")
                 {
                     // Si el TextBox está vacío, carga todos los empleados
                     CargarDatos();

@@ -192,6 +192,7 @@
             this.cal_Inicio.ShowToday = false;
             this.cal_Inicio.ShowTodayCircle = false;
             this.cal_Inicio.TabIndex = 11;
+            this.cal_Inicio.TodayDate = new System.DateTime(2025, 3, 2, 0, 0, 0, 0);
             // 
             // label_telefono
             // 

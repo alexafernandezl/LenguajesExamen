@@ -183,7 +183,9 @@ namespace DAL
                 throw ex;
             }
         }
-        public Proyectos BuscarProyectoPorNombre(String nombre)
+       
+
+        public DataTable BuscarProyectoPorNombre(string nombre)
         {
             try
             {
@@ -192,32 +194,107 @@ namespace DAL
                 _command = new SqlCommand();
                 _command.Connection = _conexion;
                 _command.CommandType = CommandType.StoredProcedure;
-                _command.CommandText = "[Sp_Buscar_Proyecto_Nombre]";
-                _command.Parameters.AddWithValue("@NombreProyecto", nombre);
-                _reader = _command.ExecuteReader();
-                Proyectos temp = null;
-                if (_reader.Read())
+
+                // Si el nombre está vacío, carga todos los empleados
+                if (string.IsNullOrWhiteSpace(nombre))
                 {
-                    temp = new Proyectos();
-                    temp.IdProyecto = int.Parse(_reader.GetValue(0).ToString());
-                    temp.NombreProyecto = _reader.GetValue(1).ToString();
-                    temp.FechaDeInicio = DateTime.Parse(_reader.GetValue(2).ToString());
-                    temp.FechaDeFinEstimada = DateTime.Parse(_reader.GetValue(3).ToString());
-                    temp.Estado = _reader.GetValue(4).ToString();
-                    temp.Descripcion = _reader.GetValue(5).ToString();
-                    temp.Presupuesto = decimal.Parse(_reader.GetValue(6).ToString());
-                    temp.IdResponsable = int.Parse(_reader.GetValue(7).ToString());
+                    _command.CommandText = "[Sp_Proyectos]";
                 }
+                else
+                {
+                    _command.CommandText = "[Sp_Buscar_Proyecto_Nombre]";
+                    _command.Parameters.AddWithValue("@NombreProyecto", nombre);
+                }
+
+                SqlDataAdapter adapter = new SqlDataAdapter();
+                DataTable datos = new DataTable();
+                adapter.SelectCommand = _command;
+                adapter.Fill(datos);
+
                 _conexion.Close();
                 _conexion.Dispose();
                 _command.Dispose();
-                return temp;
+                adapter.Dispose();
+
+                return datos;
             }
             catch (Exception ex)
             {
                 throw ex;
             }
-        }//Fin de BuscarProyecto por id
+        }
+
+
+        public bool TodasTareasFinalizadas(int idProyecto)
+        {
+            try
+            {
+                using (_conexion = new SqlConnection(StringConexion))
+                {
+                    _conexion.Open();
+                    using (_command = new SqlCommand("[Sp_Verificar_Tareas_Finalizadas]", _conexion))
+                    {
+                        _command.CommandType = CommandType.StoredProcedure;
+                        _command.Parameters.AddWithValue("@IdProyecto", idProyecto);
+
+                        int tareasPendientes = (int)_command.ExecuteScalar(); // Retorna el número de tareas no finalizadas
+
+                        return tareasPendientes == 0; // Si no hay tareas pendientes, devuelve true
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error al verificar tareas finalizadas: {ex.Message}");
+            }
+        }
+
+
+        public void CancelarTareasAsociadas(int idProyecto)
+        {
+            try
+            {
+                using (_conexion = new SqlConnection(StringConexion))
+                {
+                    _conexion.Open();
+                    using (_command = new SqlCommand("[Sp_Cancelar_Tareas_Proyecto]", _conexion))
+                    {
+                        _command.CommandType = CommandType.StoredProcedure;
+                        _command.Parameters.AddWithValue("@IdProyecto", idProyecto);
+                        _command.ExecuteNonQuery(); // Ejecuta la actualización en la base de datos
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error al cancelar tareas del proyecto: {ex.Message}");
+            }
+        }
+
+
+        public void LiberarRecursos(int idProyecto)
+        {
+            try
+            {
+                using (_conexion = new SqlConnection(StringConexion))
+                {
+                    _conexion.Open();
+                    using (_command = new SqlCommand("[Sp_Liberar_Recursos_Proyecto]", _conexion))
+                    {
+                        _command.CommandType = CommandType.StoredProcedure;
+                        _command.Parameters.AddWithValue("@IdProyecto", idProyecto);
+                        _command.ExecuteNonQuery(); // Actualiza los recursos 
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error al liberar recursos del proyecto: {ex.Message}");
+            }
+        }
+
+
+
         #endregion
         //---------------------------------------------------------------------
         //CRUD Empleados

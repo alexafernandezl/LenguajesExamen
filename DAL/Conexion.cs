@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using BLL;
 
@@ -377,8 +378,8 @@ namespace DAL
                 if (_reader.Read())
                 {
                     temp = new Empleados();
-                    temp.IdEmpleado =int.Parse(_reader.GetValue(0).ToString());
-                    temp.NombreCompleto=_reader.GetValue(1).ToString();
+                    temp.IdEmpleado = int.Parse(_reader.GetValue(0).ToString());
+                    temp.NombreCompleto = _reader.GetValue(1).ToString();
                     temp.FechaNacimiento = DateTime.Parse(_reader.GetValue(2).ToString());
                     temp.Correo = _reader.GetValue(3).ToString();
                     temp.Telefono = _reader.GetValue(4).ToString();
@@ -487,7 +488,7 @@ namespace DAL
                 adapter.Dispose();
                 return datos;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw ex;
             }
@@ -647,15 +648,47 @@ namespace DAL
         //CRUD Tareas
         //---------------------------------------------------------------------
         #region Tareas
+        private List<Tareas> listaTareas = new List<Tareas>();
 
-        public bool ExisteTareaPendienteConMayorPrioridad(Tareas tarea)
+        // Método para validar si hay tareas pendientes con mayor prioridad
+        public bool ExisteTareaPendienteConMayorPrioridad(Tareas nuevaTarea, Tareas[] listaTareas)
         {
-            _conexion = new SqlConnection(StringConexion); _conexion.Open();
-            _command = new SqlCommand("[Sp_Validar_Prioridad_Tareas]", _conexion); _command.CommandType = CommandType.StoredProcedure;
-            _command.Parameters.AddWithValue("@FechaInicio", tarea.FechaInicio); _command.Parameters.AddWithValue("@Prioridad", tarea.Prioridad);
-            bool existe = Convert.ToBoolean(_command.ExecuteScalar()); _conexion.Close();
-            return existe;
-        }//Fin de ExisteTareaPendienteConMayorPrioridad
+            string[] prioridades = { "Baja", "Media", "Alta" };
+            int prioridadActual = -1;
+
+            // Encontrar la prioridad de la nueva tarea
+            for (int i = 0; i < prioridades.Length; i++)
+            {
+                if (prioridades[i].Equals(nuevaTarea.Prioridad))
+                {
+                    prioridadActual = i;
+                    break;
+                }
+            }
+
+            // Si no se encontró la prioridad, retornar false
+            if (prioridadActual == -1)
+            {
+                return false;
+            }
+
+            // Verificar si existe una tarea pendiente con mayor prioridad
+            for (int i = 0; i < listaTareas.Length; i++)
+            {
+                if (listaTareas[i].Estado != "Completado")
+                {
+                    for (int j = 0; j < prioridades.Length; j++)
+                    {
+                        if (prioridades[j].Equals(listaTareas[i].Prioridad) && j > prioridadActual)
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return false;
+        }
         public bool EmpleadoTieneConflictoDeHorario(int idEmpleado, DateTime fechaInicio, DateTime fechaFin)
         {
             _conexion = new SqlConnection(StringConexion);
@@ -703,6 +736,29 @@ namespace DAL
                 throw; // Mantiene el stack trace original     }
             }
         }
+        private Tareas[] ConvertirDataTableATareasArray(DataTable dataTable)
+        {
+            Tareas[] tareas = new Tareas[dataTable.Rows.Count];
+            for (int i = 0; i < dataTable.Rows.Count; i++)
+            {
+                DataRow row = dataTable.Rows[i];
+                tareas[i] = new Tareas
+                {
+                    IdTarea = Convert.ToInt32(row["IdTarea"]),
+                    FechaInicio = Convert.ToDateTime(row["FechaIncio"]),
+                    FechaFinEstimada = Convert.ToDateTime(row["FechaFinEstimada"]),
+                    Descripcion = row["Descripcion"].ToString(),
+                    Estado = row["Estado"].ToString(),
+                    Prioridad = row["Prioridad"].ToString(),
+                    Requiere = row["Requiere"].ToString(),
+                    IdProyecto = Convert.ToInt32(row["IdProyecto"]),
+                    IdResponsable = Convert.ToInt32(row["IdResponsable"]),
+                    IdRecurso = Convert.ToInt32(row["IdRecurso"]),
+                    Cantidad = Convert.ToInt32(row["Cantidad"])
+                };
+            }
+            return tareas;
+        }
         public DataTable CargarTareas()
         {
             try
@@ -728,17 +784,63 @@ namespace DAL
                 throw ex;
             }
         }
+        public int VerificarAsignacionTarea(int idEmpleado, DateTime fechaInicio, DateTime fechaFin, string prioridad)
+        {
+            using (SqlConnection _conexion = new SqlConnection(StringConexion))
+            {
+                try
+                {
+                    _conexion.Open();
+                    using (SqlCommand cmd = new SqlCommand("Sp_Verificar_Asignacion_Tarea", _conexion))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        // Parámetros de entrada
+                        cmd.Parameters.AddWithValue("@IdEmpleado", idEmpleado);
+                        cmd.Parameters.AddWithValue("@FechaInicio", fechaInicio);
+                        cmd.Parameters.AddWithValue("@FechaFin", fechaFin);
+                        cmd.Parameters.AddWithValue("@Prioridad", prioridad);
+
+                        // Parámetro de salida
+                        SqlParameter resultadoParam = new SqlParameter("@Resultado", SqlDbType.Int)
+                        { Direction = ParameterDirection.Output };
+                        cmd.Parameters.Add(resultadoParam);
+
+                        // Ejecutar procedimiento almacenado
+                        cmd.ExecuteNonQuery();
+
+                        // Retornar solo el resultado
+                        return Convert.ToInt32(cmd.Parameters["@Resultado"].Value);
+                    }
+                }
+                catch
+                {
+                    return -1; // En caso de error, retorna -1
+                }
+            }
+        }
         public void GuardarTarea(Tareas obj)
         {
             try
             {
+                // Obtener la lista de tareas desde la base de datos
+                DataTable dataTableTareas = CargarTareas();
+                Tareas[] listaTareas = ConvertirDataTableATareasArray(dataTableTareas);
+
+                // Verificar si hay tareas pendientes con mayor prioridad antes de completar
+                if (obj.Estado == "Completado" && ExisteTareaPendienteConMayorPrioridad(obj, listaTareas))
+                {
+                    throw new InvalidOperationException("No se puede completar esta tarea porque hay tareas pendientes con mayor prioridad.");
+                }
+
+                // Conexión y ejecución del procedimiento almacenado
                 _conexion = new SqlConnection(StringConexion);
                 _conexion.Open();
                 _command = new SqlCommand();
                 _command.Connection = _conexion;
                 _command.CommandType = CommandType.StoredProcedure;
                 _command.CommandText = "[Sp_Add_Tarea]";
-                _command.Parameters.AddWithValue("@FechaIncio", obj.FechaInicio);
+                _command.Parameters.AddWithValue("@FechaInicio", obj.FechaInicio);
                 _command.Parameters.AddWithValue("@FechaFinEstimada", obj.FechaFinEstimada);
                 _command.Parameters.AddWithValue("@Descripcion", obj.Descripcion);
                 _command.Parameters.AddWithValue("@Estado", obj.Estado);
@@ -749,21 +851,33 @@ namespace DAL
                 _command.Parameters.AddWithValue("@IdRecurso", obj.IdRecurso);
                 _command.Parameters.AddWithValue("@Cantidad", obj.Cantidad);
                 _command.ExecuteNonQuery();
+
+                // Cerrar y liberar recursos
                 _conexion.Close();
                 _conexion.Dispose();
                 _command.Dispose();
-
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw ex; // Relanzar la excepción
             }
+        }
 
-        }//Fin agregar Tarea
         public void ModificarTarea(Tareas obj)
         {
             try
             {
+                // Obtener la lista de tareas desde la base de datos
+                DataTable dataTableTareas = CargarTareas();
+                Tareas[] listaTareas = ConvertirDataTableATareasArray(dataTableTareas);
+
+                // Verificar si hay tareas pendientes con mayor prioridad antes de completar
+                if (obj.Estado == "Completado" && ExisteTareaPendienteConMayorPrioridad(obj, listaTareas))
+                {
+                    throw new InvalidOperationException("No se puede completar esta tarea porque hay tareas pendientes con mayor prioridad.");
+                }
+
+                // Conexión y ejecución del procedimiento almacenado
                 _conexion = new SqlConnection(StringConexion);
                 _conexion.Open();
                 _command = new SqlCommand();
@@ -781,19 +895,18 @@ namespace DAL
                 _command.Parameters.AddWithValue("@IdResponsable", obj.IdResponsable);
                 _command.Parameters.AddWithValue("@IdRecurso", obj.IdRecurso);
                 _command.Parameters.AddWithValue("@Cantidad", obj.Cantidad);
-
                 _command.ExecuteNonQuery();
+
+                // Cerrar y liberar recursos
                 _conexion.Close();
                 _conexion.Dispose();
                 _command.Dispose();
-
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw ex; // Relanzar la excepción
             }
-        }//Fin Modificar Tarea
-
+        }
         public void EliminarTarea(int id)
         {
             try
@@ -828,6 +941,47 @@ namespace DAL
                 _command.CommandType = CommandType.StoredProcedure;
                 _command.CommandText = "[Sp_Buscar_Tarea_Id]";
                 _command.Parameters.AddWithValue("@IdTarea", id);
+                _reader = _command.ExecuteReader();
+                Tareas temp = null;
+                if (_reader.Read())
+                {
+                    temp = new Tareas();
+                    temp.IdTarea = int.Parse(_reader.GetValue(0).ToString());
+                    temp.FechaInicio = DateTime.Parse(_reader.GetValue(1).ToString());
+                    temp.FechaFinEstimada = DateTime.Parse(_reader.GetValue(2).ToString());
+                    temp.Descripcion = _reader.GetValue(3).ToString();
+                    temp.Estado = _reader.GetValue(4).ToString();
+                    temp.Prioridad = _reader.GetValue(5).ToString();
+                    temp.Requiere = _reader.GetValue(6).ToString();
+                    temp.IdProyecto = int.Parse(_reader.GetValue(7).ToString());
+                    temp.IdResponsable = int.Parse(_reader.GetValue(8).ToString());
+                    temp.IdRecurso = int.Parse(_reader.GetValue(9).ToString());
+                    temp.Cantidad = int.Parse(_reader.GetValue(10).ToString());
+                }
+                _conexion.Close();
+                _conexion.Dispose();
+                _command.Dispose();
+                return temp;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }//Fin de Buscar Tarea por id
+
+
+        public Tareas BuscarTareaPorFecha(Tareas tarea)
+        {
+            try
+            {
+                _conexion = new SqlConnection(StringConexion);
+                _conexion.Open();
+                _command = new SqlCommand();
+                _command.Connection = _conexion;
+                _command.CommandType = CommandType.StoredProcedure;
+                _command.CommandText = "[Sp_Buscar_Tareas_Fechas]";
+                _command.Parameters.AddWithValue("@FechaInicio", tarea.FechaInicio);
+                _command.Parameters.AddWithValue("@FechaFin", tarea.FechaFinEstimada);
                 _reader = _command.ExecuteReader();
                 Tareas temp = null;
                 if (_reader.Read())

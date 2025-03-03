@@ -18,19 +18,21 @@ namespace App
 
         private Tareas tareaMain;
         private readonly Conexion _conexion;
-        public FrmAddTareas(int id)
+        private FrmTareas frmTareas;
+        public FrmAddTareas(int id, FrmTareas frmTareas)
         {
             InitializeComponent();
             _conexion = new Conexion(ConfigurationManager.ConnectionStrings["StringConexion"].ConnectionString);
             tareaMain = _conexion.BuscarTareaPorId(id);
-
+            this.frmTareas = frmTareas;
+            
+            CargarResponsables();
+            CargarProyectos();
+            CargarRecursos();
             if (tareaMain != null)
             {
                 CargarDatos();
             }
-            CargarResponsables();
-            CargarProyectos();
-            CargarRecursos();
         }
         
         private void CargarResponsables()
@@ -69,9 +71,9 @@ namespace App
 
         private void CargarDatos()
         {
-            cb_idRecurso.SelectedValue = this.tareaMain.IdRecurso;
-            cb_idResponsable.SelectedValue = this.tareaMain.IdResponsable;
-            cb_idProyecto.SelectedValue = this.tareaMain.IdProyecto;
+            cb_idRecurso.SelectedValue = Convert.ToInt32(this.tareaMain.IdRecurso);
+            cb_idResponsable.SelectedValue = Convert.ToInt32(this.tareaMain.IdResponsable);
+            cb_idProyecto.SelectedValue = Convert.ToInt32(this.tareaMain.IdProyecto);
             txt_Descripcion.Text = this.tareaMain.Descripcion;
             cb_Estado.SelectedItem = this.tareaMain.Estado;
             cal_Inicio.SetDate(this.tareaMain.FechaInicio);
@@ -135,9 +137,11 @@ namespace App
                     if (ValidarCampos())
                     {
                         Tareas ob = _conexion.BuscarTareaPorId(tareaMain.IdTarea);
+                        Tareas t = _conexion.BuscarTareaPorFecha(tareaMain);
 
                         if (ob.IdTarea == this.tareaMain.IdTarea)
                         {
+                            
 
                             // Validar conflicto de horarios con el responsable
                             DateTime fechaInicio = this.cal_Inicio.SelectionStart;
@@ -152,6 +156,7 @@ namespace App
                                 return;
                             }
 
+                            
 
                             // Validar disponibilidad del recurso
                             int idRecurso = Convert.ToInt32(cb_idRecurso.SelectedValue);
@@ -166,15 +171,22 @@ namespace App
 
 
                             // Validar existencia de tarea pendiente con mayor prioridad
-                            Tareas tempTarea = new Tareas
+                            string Prioridad = this.cb_Prioridad.SelectedItem.ToString();
+                            if (_conexion.VerificarAsignacionTarea(idResponsable, fechaInicio, fechaFinEstimada, Prioridad) == 1)
                             {
-                                FechaInicio = fechaInicio,
-                                Prioridad = this.cb_Prioridad.SelectedItem.ToString()
-                            };
-                            string estado = this.cb_Estado.SelectedItem.ToString();
-                            if (_conexion.ExisteTareaPendienteConMayorPrioridad(tempTarea) && estado == "Completado")
+                                MessageBox.Show("Hay tareas de alta prioridad pendientes.", "",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                return;
+                            }
+                            if (_conexion.VerificarAsignacionTarea(idResponsable, fechaInicio, fechaFinEstimada, Prioridad) == 2)
                             {
-                                MessageBox.Show("Deben completarse las tareas con mayor prioridad.", "",
+                                MessageBox.Show("Hay tareas de la misma prioridad de fechas anteriores.", "",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                return;
+                            }
+                            if (_conexion.VerificarAsignacionTarea(idResponsable, fechaInicio, fechaFinEstimada, Prioridad) == 3)
+                            {
+                                MessageBox.Show("Conflicto de horario con otra tarea.", "",
                                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                                 return;
                             }
@@ -212,14 +224,15 @@ namespace App
                                 Cantidad = cantidad,
                                 IdTarea = ob.IdTarea
                             };
+
+                            if (t.IdTarea == temp.IdTarea) { 
                             _conexion.ModificarTarea(temp);
+                                frmTareas.CargarDatos();
+                            }
                             this.Close();
 
                             // Mostrar el formulario de tareas
-                            using (FrmTareas frm = new FrmTareas())
-                            {
-                                frm.ShowDialog();
-                            }
+                          
                         }
                         else
                         {
@@ -263,16 +276,22 @@ namespace App
 
 
                         // Validar existencia de tarea pendiente con mayor prioridad
-                        Tareas tempTarea = new Tareas
+                        string Prioridad = this.cb_Prioridad.SelectedItem.ToString();
+                        if (_conexion.VerificarAsignacionTarea(idResponsable, fechaInicio, fechaFinEstimada, Prioridad) == 1)
                         {
-                            FechaInicio = fechaInicio,
-                            Prioridad = this.cb_Prioridad.SelectedItem.ToString()
-                        };
-                        string estado = this.cb_Estado.SelectedItem.ToString();
-
-                        if (_conexion.ExisteTareaPendienteConMayorPrioridad(tempTarea) && estado == "Completado")
+                            MessageBox.Show("Hay tareas de alta prioridad pendientes.", "",
+                                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+                        if (_conexion.VerificarAsignacionTarea(idResponsable, fechaInicio, fechaFinEstimada, Prioridad) == 2)
                         {
-                            MessageBox.Show("Deben completarse las tareas con mayor prioridad.", "",
+                            MessageBox.Show("Hay tareas de la misma prioridad de fechas anteriores.", "",
+                                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+                        if (_conexion.VerificarAsignacionTarea(idResponsable, fechaInicio, fechaFinEstimada, Prioridad) == 3)
+                        {
+                            MessageBox.Show("Conflicto de horario con otra tarea.", "",
                                 MessageBoxButtons.OK, MessageBoxIcon.Warning);
                             return;
                         }
@@ -307,14 +326,10 @@ namespace App
                             Cantidad = cantidad,
                         };
                         _conexion.GuardarTarea(temp);
+                        frmTareas.CargarDatos();
 
                         this.Close();
 
-                        // Mostrar el formulario de tareas
-                        using (FrmTareas frm = new FrmTareas())
-                        {
-                            frm.ShowDialog();
-                        }
                     }
                 }
             }

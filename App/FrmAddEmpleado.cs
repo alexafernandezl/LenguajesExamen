@@ -223,18 +223,26 @@ namespace App
         {
             if (string.IsNullOrEmpty(this.txt_Correo.Text))
             {
+
+                MessageBox.Show("El campo Correo no puede estar vacío.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
             }
             if (string.IsNullOrEmpty(this.txt_NombreCompleto.Text))
             {
+
+                MessageBox.Show("El campo Nombre del completo no puede estar vacío.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
             }
             if (string.IsNullOrEmpty(this.txt_telefono.Text))
             {
+
+                MessageBox.Show("El campo Telefono no puede estar vacío.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
             }
             if (string.IsNullOrEmpty(this.txt_Codigo_Pais.Text))
             {
+
+                MessageBox.Show("El campo Codigo de pais no puede estar vacío.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
             }
             return true;

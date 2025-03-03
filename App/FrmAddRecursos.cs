@@ -17,13 +17,15 @@ namespace App
     {
         private Recursos recursosMain;
         private readonly Conexion _conexion;
-        public FrmAddRecursos(int id)
+        private FrmRecursos frmRecursos;
+        public FrmAddRecursos(int id, FrmRecursos frmRecursos)
         {
             InitializeComponent();
             _conexion = new Conexion(ConfigurationManager.ConnectionStrings["StringConexion"].ConnectionString);
             recursosMain = _conexion.BuscarRecursoPorId(id);
             if (recursosMain != null)
                 CargarDatos();
+            this.frmRecursos = frmRecursos;
         }
         private void CargarDatos()
         {
@@ -79,19 +81,9 @@ namespace App
                             temp.Descripcion = this.txt_Descripcion.Text;
                             temp.IdRecurso = ob.IdRecurso;
                             _conexion.ModificarRecurso(temp);
+                            frmRecursos.CargarDatos();
                             this.Close();
-                            try
-                            {
-                                using (FrmRecursos frm = new FrmRecursos())
-                                {
-                                    frm.ShowDialog();
-                                }
-                                ;
-                            }
-                            catch (Exception ex)
-                            {
-                                throw ex;
-                            }
+                           
                         }
                         else
                         {
@@ -113,19 +105,8 @@ namespace App
                     temp.Estado = this.cb_EstadoRecurso.SelectedItem.ToString();
                     temp.Descripcion = this.txt_Descripcion.Text;
                     _conexion.GuardarRecurso(temp);
+                    frmRecursos.CargarDatos();
                     this.Close();
-                    try
-                    {
-                        using (FrmRecursos frm = new FrmRecursos())
-                        {
-                            frm.ShowDialog();
-                        }
-                        ;
-                    }
-                    catch (Exception ex)
-                    {
-                        throw ex;
-                    }
                 }
                 else
                 {

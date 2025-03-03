@@ -87,5 +87,56 @@ namespace App
                 throw ex;
             }
         }
+
+        private void txt_buscar_TextChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(txt_buscar.Text) || txt_buscar.Text == "Buscar Tarea...")
+                {
+                    CargarDatos();
+                }
+                else
+                {
+                    DataTable resultados = _conexion.BuscarTareaDescripcion(txt_buscar.Text);
+
+                    if (resultados.Rows.Count > 0)
+                    {
+                        dataGridView1.DataSource = resultados;
+                    }
+                    else
+                    {
+                        dataGridView1.DataSource = null;
+
+                        MessageBox.Show("No se encontraron tareas con ese nombre.", "Búsqueda", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                }
+            }
+            catch (FormatException ex)
+            {
+                MessageBox.Show("El formato de búsqueda no es válido. " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ocurrió un error inesperado: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void txt_buscar_Enter(object sender, EventArgs e)
+        {
+            if (txt_buscar.Text == "Buscar Tarea...")
+            {
+                txt_buscar.Text = "";
+                txt_buscar.ForeColor = Color.Black;
+            }
+        }
+        private void txt_buscar_Leave(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(txt_buscar.Text))
+            {
+                txt_buscar.Text = "Buscar Tarea...";
+                txt_buscar.ForeColor = Color.Gray;
+            }
+        }
     }
 }

@@ -28,7 +28,7 @@ namespace App
 
         }
 
-        private void CargarDatos()
+        public void CargarDatos()
         {
             try
             {
@@ -63,7 +63,9 @@ namespace App
 
         private void btn_Agregar_Click(object sender, EventArgs e)
         {
-            FrmPrincipal.MostrarAddFrame(new FrmAddRecursos(0));
+
+            FrmAddRecursos frm = new FrmAddRecursos(0, this); // Pasamos la referencia
+            frm.ShowDialog(); // Modal respecto a FrmEmpleados
         }
 
         private void editarToolStripMenuItem_Click(object sender, EventArgs e)
@@ -72,8 +74,9 @@ namespace App
             {
                 if (this.dataGridView1.SelectedRows.Count > 0)
                 {
-                    int id = int.Parse(this.dataGridView1.SelectedRows[0].Cells["IdRecurso"].Value.ToString());
-                    FrmPrincipal.MostrarAddFrame(new FrmAddRecursos(id));
+                    int id = int.Parse(this.dataGridView1.SelectedRows[0].Cells["IdEmpleado"].Value.ToString());
+                    FrmAddRecursos frm = new FrmAddRecursos(id, this);
+                    frm.ShowDialog();
                 }
             }
             catch (Exception ex)

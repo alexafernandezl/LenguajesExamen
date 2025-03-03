@@ -1009,6 +1009,44 @@ namespace DAL
                 throw ex;
             }
         }//Fin de Buscar Tarea por id
+        public DataTable BuscarTareaDescripcion(String descripcion)
+        {
+            try
+            {
+                _conexion = new SqlConnection(StringConexion);
+                _conexion.Open();
+                _command = new SqlCommand();
+                _command.Connection = _conexion;
+                _command.CommandType = CommandType.StoredProcedure;
+
+                // Si el nombre está vacío, carga todos los empleados
+                if (string.IsNullOrWhiteSpace(descripcion))
+                {
+                    _command.CommandText = "[Sp_Tareas]";
+                }
+                else
+                {
+                    _command.CommandText = "[Sp_Buscar_Tarea_Descripcion]";
+                    _command.Parameters.AddWithValue("@Descripcion", descripcion);
+                }
+
+                SqlDataAdapter adapter = new SqlDataAdapter();
+                DataTable datos = new DataTable();
+                adapter.SelectCommand = _command;
+                adapter.Fill(datos);
+
+                _conexion.Close();
+                _conexion.Dispose();
+                _command.Dispose();
+                adapter.Dispose();
+
+                return datos;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }//Fin de BuscarProyecto por id
         #endregion
     }
 

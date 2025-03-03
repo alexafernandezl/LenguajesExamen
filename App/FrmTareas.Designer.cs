@@ -37,6 +37,7 @@
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.eliminarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.txt_buscar = new System.Windows.Forms.TextBox();
             this.panel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pb_CerrarTareas)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
@@ -46,6 +47,7 @@
             // panel3
             // 
             this.panel3.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.panel3.Controls.Add(this.txt_buscar);
             this.panel3.Controls.Add(this.btn_Imprimir);
             this.panel3.Controls.Add(this.btn_Agregar);
             this.panel3.Controls.Add(this.pb_CerrarTareas);
@@ -115,6 +117,18 @@
             this.editarToolStripMenuItem.Text = "Editar";
             this.editarToolStripMenuItem.Click += new System.EventHandler(this.editarToolStripMenuItem_Click);
             // 
+            // txt_buscar
+            // 
+            this.txt_buscar.ForeColor = System.Drawing.SystemColors.ControlDark;
+            this.txt_buscar.Location = new System.Drawing.Point(0, 15);
+            this.txt_buscar.Name = "txt_buscar";
+            this.txt_buscar.Size = new System.Drawing.Size(193, 20);
+            this.txt_buscar.TabIndex = 6;
+            this.txt_buscar.Text = "Buscar Tarea...";
+            this.txt_buscar.TextChanged += new System.EventHandler(this.txt_buscar_TextChanged);
+            this.txt_buscar.Enter += new System.EventHandler(this.txt_buscar_Enter);
+            this.txt_buscar.Leave += new System.EventHandler(this.txt_buscar_Leave);
+            // 
             // FrmTareas
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -128,6 +142,7 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "FrmTareas";
             this.panel3.ResumeLayout(false);
+            this.panel3.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pb_CerrarTareas)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.contextMenuStrip1.ResumeLayout(false);
@@ -145,5 +160,6 @@
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ToolStripMenuItem eliminarToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem editarToolStripMenuItem;
+        private System.Windows.Forms.TextBox txt_buscar;
     }
 }

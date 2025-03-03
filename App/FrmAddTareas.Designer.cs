@@ -245,6 +245,7 @@
             this.cal_finEstimada.Location = new System.Drawing.Point(344, 245);
             this.cal_finEstimada.Name = "cal_finEstimada";
             this.cal_finEstimada.TabIndex = 16;
+            this.cal_finEstimada.DateChanged += new System.Windows.Forms.DateRangeEventHandler(this.ValidarSolapamientoFechas);
             // 
             // finLabel
             // 
@@ -282,6 +283,7 @@
             this.cal_Inicio.Location = new System.Drawing.Point(344, 49);
             this.cal_Inicio.Name = "cal_Inicio";
             this.cal_Inicio.TabIndex = 11;
+            this.cal_Inicio.DateChanged += new System.Windows.Forms.DateRangeEventHandler(this.ValidarSolapamientoFechas);
             // 
             // label_telefono
             // 

@@ -38,9 +38,12 @@ namespace App
             {
                 cb_Estado.SelectedItem = "Pendiente"; // Estado por defecto
             }
+            cal_Inicio.DateChanged += ValidarSolapamientoFechas;
+            cal_finEstimada.DateChanged += ValidarSolapamientoFechas;
+
             cb_Estado.SelectedIndexChanged += cb_Estado_SelectedIndexChanged;
         }
-        
+       
         private void CargarResponsables()
         {
             DataTable empleados = _conexion.CargarEmpleados();
@@ -203,7 +206,53 @@ namespace App
             }
             return true;
         }
+        private void VerificarSolapamientoFechas()
+        {
+            if (tareaMain == null) return;
 
+            DateTime nuevaFechaInicio = cal_Inicio.SelectionStart;
+            DateTime nuevaFechaFin = cal_finEstimada.SelectionStart;
+            int idRecurso = Convert.ToInt32(cb_idRecurso.SelectedValue);
+            int idTareaActual = tareaMain.IdTarea;
+
+            // 🔍 Verificar si hay otras tareas que usan el mismo recurso en el mismo periodo
+            List<Tareas> tareasSolapadas = _conexion.ObtenerTareasSolapadas(idRecurso, nuevaFechaInicio, nuevaFechaFin, idTareaActual);
+
+            if (tareasSolapadas.Count > 0)
+            {
+                string mensaje = "El recurso seleccionado ya está siendo utilizado en las siguientes tareas:\n";
+                foreach (var tarea in tareasSolapadas)
+                {
+                    mensaje += $"- {tarea.Descripcion} (Del {tarea.FechaInicio.ToShortDateString()} al {tarea.FechaFinEstimada.ToShortDateString()})\n";
+                }
+
+                mensaje += "\nSeleccione una opción:\n\n1. Ajustar la fecha automáticamente\n2. Seleccionar otro recurso\n3. Cancelar el cambio";
+
+                DialogResult result = MessageBox.Show(mensaje, "Conflicto de Fechas", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
+
+                if (result == DialogResult.Yes)
+                {
+                    // 📌 Encuentra la próxima fecha disponible para el recurso
+                    DateTime nuevaFechaDisponible = _conexion.ObtenerProximaFechaDisponible(idRecurso, nuevaFechaInicio);
+                    cal_Inicio.SetDate(nuevaFechaDisponible);
+                    cal_finEstimada.SetDate(nuevaFechaDisponible.AddDays((nuevaFechaFin - nuevaFechaInicio).Days));
+
+                    MessageBox.Show("La fecha ha sido ajustada automáticamente.", "Ajuste realizado", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else if (result == DialogResult.No)
+                {
+                    // 📌 Permite al usuario seleccionar otro recurso
+                    MessageBox.Show("Seleccione otro recurso para esta tarea.", "Reasignación de recurso", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    cb_idRecurso.Focus();
+                }
+                else
+                {
+                    // ❌ Cancela el cambio y vuelve a la fecha anterior
+                    cal_Inicio.SetDate(tareaMain.FechaInicio);
+                    cal_finEstimada.SetDate(tareaMain.FechaFinEstimada);
+                }
+            }
+        }
         private void btn_Guardar_Click(object sender, EventArgs e)
         {
             try
@@ -246,10 +295,14 @@ namespace App
                                     return;
                                 }
                             }
-                                
-                            // Validar disponibilidad del recurso
-                            
 
+                            // Validar que la fecha de inicio sea menor a la fecha de fin estimada
+                            if (fechaInicio > fechaFinEstimada)
+                            {
+                                MessageBox.Show("La fecha de inicio debe ser anterior a la fecha de finalización.",
+                                                "Error de validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                return;
+                            }
 
                             // Validar existencia de tarea pendiente con mayor prioridad
                             string Prioridad = this.cb_Prioridad.SelectedItem.ToString();
@@ -336,6 +389,13 @@ namespace App
 
                         int idResponsable = Convert.ToInt32(cb_idResponsable.SelectedValue);
 
+                        // Validar que la fecha de inicio sea menor a la fecha de fin estimada
+                        if (fechaInicio > fechaFinEstimada)
+                        {
+                            MessageBox.Show("La fecha de inicio debe ser anterior a la fecha de finalización.",
+                                            "Error de validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
 
                         if (_conexion.EmpleadoTieneConflictoDeHorario(idResponsable, fechaInicio, fechaFinEstimada))
                         {
@@ -470,6 +530,11 @@ namespace App
             }
 
             estadoAnterior = nuevoEstado;
+        }
+
+        private void ValidarSolapamientoFechas(object sender, DateRangeEventArgs e)
+        {
+            VerificarSolapamientoFechas();
         }
     }
 }

@@ -765,6 +765,78 @@ namespace DAL
         //CRUD Tareas
         //---------------------------------------------------------------------
         #region Tareas
+
+        public DateTime ObtenerProximaFechaDisponible(int idRecurso, DateTime fechaInicio)
+        {
+            using (SqlConnection con = new SqlConnection(StringConexion))
+            {
+                con.Open();
+                string query = @"
+            SELECT TOP 1 FechaFinEstimada 
+            FROM Tareas 
+            WHERE IdRecurso = @IdRecurso 
+            AND FechaFinEstimada >= @FechaInicio
+            ORDER BY FechaFinEstimada DESC";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    cmd.Parameters.AddWithValue("@IdRecurso", idRecurso);
+                    cmd.Parameters.AddWithValue("@FechaInicio", fechaInicio);
+
+                    object result = cmd.ExecuteScalar();
+                    if (result != null)
+                    {
+                        DateTime ultimaFechaOcupada = Convert.ToDateTime(result);
+                        return ultimaFechaOcupada.AddDays(1); // 📌 La siguiente fecha disponible es un día después de la última ocupada
+                    }
+                    else
+                    {
+                        return fechaInicio; // Si no hay registros, usa la fecha seleccionada
+                    }
+                }
+            }
+        }
+        public List<Tareas> ObtenerTareasSolapadas(int idRecurso, DateTime fechaInicio, DateTime fechaFin, int idTareaActual)
+        {
+            List<Tareas> tareasSolapadas = new List<Tareas>();
+
+            using (SqlConnection con = new SqlConnection(StringConexion))
+            {
+                con.Open();
+                string query = @"
+            SELECT * FROM Tareas
+            WHERE IdRecurso = @IdRecurso 
+            AND IdTarea <> @IdTareaActual
+            AND (
+                (FechaIncio BETWEEN @FechaInicio AND @FechaFin) 
+                OR (FechaFinEstimada BETWEEN @FechaInicio AND @FechaFin)
+                OR (@FechaInicio BETWEEN FechaIncio AND FechaFinEstimada)
+            )";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    cmd.Parameters.AddWithValue("@IdRecurso", idRecurso);
+                    cmd.Parameters.AddWithValue("@FechaInicio", fechaInicio);
+                    cmd.Parameters.AddWithValue("@FechaFin", fechaFin);
+                    cmd.Parameters.AddWithValue("@IdTareaActual", idTareaActual);
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            tareasSolapadas.Add(new Tareas
+                            {
+                                IdTarea = Convert.ToInt32(reader["IdTarea"]),
+                                Descripcion = reader["Descripcion"].ToString(),
+                                FechaInicio = Convert.ToDateTime(reader["FechaInicio"]),
+                                FechaFinEstimada = Convert.ToDateTime(reader["FechaFinEstimada"])
+                            });
+                        }
+                    }
+                }
+            }
+            return tareasSolapadas;
+        }
         private List<Tareas> listaTareas = new List<Tareas>();
 
         // Método para validar si hay tareas pendientes con mayor prioridad

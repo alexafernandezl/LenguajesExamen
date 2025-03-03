@@ -345,6 +345,7 @@ namespace DAL
             catch (Exception ex)
             {
                 throw new Exception("Error al verificar solapamiento de empleado en proyectos: " + ex.Message);
+
             }
         }
 

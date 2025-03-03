@@ -31,8 +31,14 @@ namespace App
             CargarRecursos();
             if (tareaMain != null)
             {
-                CargarDatos();
+                CargarDatos(); // Carga los datos del proyecto si existe
+                estadoAnterior = tareaMain.Estado;
             }
+            else
+            {
+                cb_Estado.SelectedItem = "Pendiente"; // Estado por defecto
+            }
+            cb_Estado.SelectedIndexChanged += cb_Estado_SelectedIndexChanged;
         }
         
         private void CargarResponsables()
@@ -61,12 +67,31 @@ namespace App
 
         private void CargarRecursos()
         {
-            DataTable recursos = _conexion.CargarRecursos(); DataRow row = recursos.NewRow();
-            row["IdRecurso"] = DBNull.Value; row["NombreRecurso"] = "Seleccione un recurso";
-            recursos.Rows.InsertAt(row, 0);
-            cb_idRecurso.DataSource = recursos; cb_idRecurso.DisplayMember = "NombreRecurso";//muestra el nombre
-            cb_idRecurso.ValueMember = "IdRecurso";//almacena id
-            cb_idRecurso.SelectedIndex = 0;
+            // Cargar todos los recursos desde la base de datos
+            DataTable recursos = _conexion.CargarRecursos();
+
+            // Filtrar los recursos para excluir los que tienen el estado "Inactivo"
+            DataTable recursosFiltrados = recursos.Clone(); // Clona la estructura del DataTable
+            foreach (DataRow row in recursos.Rows)
+            {
+                if (row["Estado"].ToString() != "Inactivo") // Verifica que el estado no sea "Inactivo"
+                {
+                    recursosFiltrados.ImportRow(row); // Agrega la fila al DataTable filtrado
+                }
+            }
+
+            // Agregar la opción "Seleccione un recurso" al inicio
+            DataRow nuevaFila = recursosFiltrados.NewRow();
+            nuevaFila["IdRecurso"] = DBNull.Value;
+            nuevaFila["NombreRecurso"] = "Seleccione un recurso";
+            recursosFiltrados.Rows.InsertAt(nuevaFila, 0);
+
+            // Asignar el DataTable filtrado como DataSource del ComboBox
+            cb_idRecurso.DataSource = recursosFiltrados;
+            cb_idRecurso.DisplayMember = "NombreRecurso"; // Muestra el nombre
+            cb_idRecurso.ValueMember = "IdRecurso"; // Almacena el ID
+            cb_idRecurso.SelectedIndex = 0; // Selecciona la opción por defecto
+
         }
 
         private void CargarDatos()
@@ -81,8 +106,59 @@ namespace App
             cb_Prioridad.SelectedItem = this.tareaMain.Prioridad;
             cb_requiere.SelectedItem = this.tareaMain.Requiere;
             txt_cantidad.Text = this.tareaMain.Cantidad.ToString();
-        }
 
+            // Guardar estado anterior para validaciones
+            estadoAnterior = this.tareaMain.Estado;
+
+            // Limpiar opciones del ComboBox antes de agregar nuevas
+            cb_Estado.Items.Clear();
+
+            // Configurar opciones del estado según el estado actual
+            switch (tareaMain.Estado)
+            {
+                case "Pendiente por defecto":
+                    cb_Estado.Items.Add("Pendiente por defecto");
+                    cb_Estado.Items.Add("Aprobado");
+                    cb_Estado.Items.Add("En Progreso");
+                    cb_Estado.Items.Add("Cancelado");
+                    break;
+
+                case "Aprobado":
+                    cb_Estado.Items.Add("Aprobado");
+                    cb_Estado.Items.Add("En Progreso");
+                    cb_Estado.Items.Add("Cancelado");
+                    break;
+
+                case "En Progreso":
+                    cb_Estado.Items.Add("En Progreso");
+                    cb_Estado.Items.Add("Completado");
+                    cb_Estado.Items.Add("Cancelado");
+                    break;
+
+                case "Completado":
+                    cb_Estado.Items.Add("Completado");
+                    cb_Estado.Items.Add("Cancelado");
+                    break;
+
+                case "Cancelado":
+                    cb_Estado.Items.Add("Cancelado"); // No permitir cambios desde cancelado
+                    break;
+            }
+
+            // Asegurar que el ComboBox tiene elementos antes de asignar el índice
+            if (cb_Estado.Items.Count > 0)
+            {
+                // Si el estado de la tarea está en la lista, seleccionarlo
+                if (cb_Estado.Items.Contains(this.tareaMain.Estado))
+                {
+                    cb_Estado.SelectedItem = this.tareaMain.Estado;
+                }
+                else
+                {
+                    cb_Estado.SelectedIndex = 0; // Solo asignar si hay elementos disponibles
+                }
+            }
+        }
 
         private bool ValidarCampos()
         {
@@ -148,26 +224,31 @@ namespace App
                             DateTime fechaFinEstimada = this.cal_finEstimada.SelectionStart;
                             int idResponsable = Convert.ToInt32(cb_idResponsable.SelectedValue);
 
-
-                            if (_conexion.EmpleadoTieneConflictoDeHorario(idResponsable, fechaInicio, fechaFinEstimada))
+                            if (t.IdTarea != tareaMain.IdTarea)
                             {
-                                MessageBox.Show("El empleado tiene un conflicto de horario con esta tarea.", "",
-                                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                return;
+                                if (_conexion.EmpleadoTieneConflictoDeHorario(idResponsable, fechaInicio, fechaFinEstimada))
+                                {
+                                    MessageBox.Show("El empleado tiene un conflicto de horario con esta tarea.", "",
+                                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                    return;
+                                }
                             }
 
-                            
+                            if (!cb_Estado.SelectedItem.Equals("Cancelado"))
+                            {
+                                int idRecurso = Convert.ToInt32(cb_idRecurso.SelectedValue);
 
+                                int cantidadRequerida = int.Parse(this.txt_cantidad.Text);
+                                if (!_conexion.ValidarDisponibilidadRecurso(idRecurso, cantidadRequerida))
+                                {
+                                    MessageBox.Show("El recurso no tiene suficiente cantidad disponibilidad.", "",
+                                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                    return;
+                                }
+                            }
+                                
                             // Validar disponibilidad del recurso
-                            int idRecurso = Convert.ToInt32(cb_idRecurso.SelectedValue);
-
-                            int cantidadRequerida = int.Parse(this.txt_cantidad.Text);
-                            if (!_conexion.ValidarDisponibilidadRecurso(idRecurso, cantidadRequerida))
-                            {
-                                MessageBox.Show("El recurso no tiene suficiente cantidad disponibilidad.", "",
-                                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                return;
-                            }
+                            
 
 
                             // Validar existencia de tarea pendiente con mayor prioridad
@@ -372,6 +453,23 @@ namespace App
         private void cb_IdResponsable_SelectedIndex_Changed(object sender, EventArgs e)
         {
 
+        }
+        private string estadoAnterior;
+        // Evento que maneja cambios de estado en tiempo real
+        private void cb_Estado_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (tareaMain == null) return;
+
+            string nuevoEstado = cb_Estado.SelectedItem.ToString();
+
+            if (nuevoEstado == "En Progreso" && estadoAnterior == "Pendiente por defecto")
+            {
+                MessageBox.Show("Un proyecto no puede pasar de 'Pendiente' a 'En Progreso' sin aprobación.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                cb_Estado.SelectedItem = estadoAnterior;
+                return;
+            }
+
+            estadoAnterior = nuevoEstado;
         }
     }
 }

@@ -29,6 +29,9 @@
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
+            this.cb_idRecurso = new System.Windows.Forms.ComboBox();
+            this.cb_idResponsable = new System.Windows.Forms.ComboBox();
+            this.cb_idProyecto = new System.Windows.Forms.ComboBox();
             this.txt_cantidad = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.label_recurso = new System.Windows.Forms.Label();
@@ -48,9 +51,6 @@
             this.label_telefono = new System.Windows.Forms.Label();
             this.label_correo = new System.Windows.Forms.Label();
             this.incioLabel = new System.Windows.Forms.Label();
-            this.cb_idProyecto = new System.Windows.Forms.ComboBox();
-            this.cb_idResponsable = new System.Windows.Forms.ComboBox();
-            this.cb_idRecurso = new System.Windows.Forms.ComboBox();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -83,6 +83,35 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(687, 597);
             this.panel1.TabIndex = 5;
+            // 
+            // cb_idRecurso
+            // 
+            this.cb_idRecurso.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cb_idRecurso.FormattingEnabled = true;
+            this.cb_idRecurso.Location = new System.Drawing.Point(169, 247);
+            this.cb_idRecurso.Name = "cb_idRecurso";
+            this.cb_idRecurso.Size = new System.Drawing.Size(163, 21);
+            this.cb_idRecurso.TabIndex = 36;
+            // 
+            // cb_idResponsable
+            // 
+            this.cb_idResponsable.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cb_idResponsable.FormattingEnabled = true;
+            this.cb_idResponsable.Location = new System.Drawing.Point(169, 208);
+            this.cb_idResponsable.Name = "cb_idResponsable";
+            this.cb_idResponsable.Size = new System.Drawing.Size(163, 21);
+            this.cb_idResponsable.TabIndex = 35;
+            this.cb_idResponsable.SelectedIndexChanged += new System.EventHandler(this.cb_IdResponsable_SelectedIndex_Changed);
+            // 
+            // cb_idProyecto
+            // 
+            this.cb_idProyecto.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cb_idProyecto.FormattingEnabled = true;
+            this.cb_idProyecto.Location = new System.Drawing.Point(169, 168);
+            this.cb_idProyecto.Name = "cb_idProyecto";
+            this.cb_idProyecto.Size = new System.Drawing.Size(163, 21);
+            this.cb_idProyecto.TabIndex = 34;
+            this.cb_idProyecto.SelectedIndexChanged += new System.EventHandler(this.cb_idProyecto_SelectedIndexChanged);
             // 
             // txt_cantidad
             // 
@@ -209,6 +238,7 @@
             this.cb_Estado.Name = "cb_Estado";
             this.cb_Estado.Size = new System.Drawing.Size(163, 21);
             this.cb_Estado.TabIndex = 17;
+            this.cb_Estado.SelectedIndexChanged += new System.EventHandler(this.cb_Estado_SelectedIndexChanged);
             // 
             // cal_finEstimada
             // 
@@ -285,35 +315,6 @@
             this.incioLabel.Size = new System.Drawing.Size(117, 16);
             this.incioLabel.TabIndex = 3;
             this.incioLabel.Text = "Fecha de inicio:";
-            // 
-            // cb_idProyecto
-            // 
-            this.cb_idProyecto.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cb_idProyecto.FormattingEnabled = true;
-            this.cb_idProyecto.Location = new System.Drawing.Point(169, 168);
-            this.cb_idProyecto.Name = "cb_idProyecto";
-            this.cb_idProyecto.Size = new System.Drawing.Size(163, 21);
-            this.cb_idProyecto.TabIndex = 34;
-            this.cb_idProyecto.SelectedIndexChanged += new System.EventHandler(this.cb_idProyecto_SelectedIndexChanged);
-            // 
-            // cb_idResponsable
-            // 
-            this.cb_idResponsable.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cb_idResponsable.FormattingEnabled = true;
-            this.cb_idResponsable.Location = new System.Drawing.Point(169, 208);
-            this.cb_idResponsable.Name = "cb_idResponsable";
-            this.cb_idResponsable.Size = new System.Drawing.Size(163, 21);
-            this.cb_idResponsable.TabIndex = 35;
-            this.cb_idResponsable.SelectedIndexChanged += new System.EventHandler(this.cb_IdResponsable_SelectedIndex_Changed);
-            // 
-            // cb_idRecurso
-            // 
-            this.cb_idRecurso.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cb_idRecurso.FormattingEnabled = true;
-            this.cb_idRecurso.Location = new System.Drawing.Point(169, 247);
-            this.cb_idRecurso.Name = "cb_idRecurso";
-            this.cb_idRecurso.Size = new System.Drawing.Size(163, 21);
-            this.cb_idRecurso.TabIndex = 36;
             // 
             // FrmAddTareas
             // 

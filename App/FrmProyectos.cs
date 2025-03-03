@@ -149,7 +149,7 @@ namespace App
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(txt_buscar.Text))
+                if (string.IsNullOrWhiteSpace(txt_buscar.Text) || txt_buscar.Text == "Buscar empleado...")
                 {
                     // Si el TextBox está vacío, carga todos los empleados
                     CargarDatos();
@@ -166,7 +166,7 @@ namespace App
                     else
                     {
                         dataGridView1.DataSource = null;
-                        MessageBox.Show("No se encontraron empleados con ese nombre.", "Búsqueda", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show("No se encontraron proyectos con ese nombre.", "Búsqueda", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                 }
             }

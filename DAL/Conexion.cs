@@ -224,6 +224,74 @@ namespace DAL
         }
 
 
+        public bool TodasTareasFinalizadas(int idProyecto)
+        {
+            try
+            {
+                using (_conexion = new SqlConnection(StringConexion))
+                {
+                    _conexion.Open();
+                    using (_command = new SqlCommand("[Sp_Verificar_Tareas_Finalizadas]", _conexion))
+                    {
+                        _command.CommandType = CommandType.StoredProcedure;
+                        _command.Parameters.AddWithValue("@IdProyecto", idProyecto);
+
+                        int tareasPendientes = (int)_command.ExecuteScalar(); // Retorna el número de tareas no finalizadas
+
+                        return tareasPendientes == 0; // Si no hay tareas pendientes, devuelve true
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error al verificar tareas finalizadas: {ex.Message}");
+            }
+        }
+
+
+        public void CancelarTareasAsociadas(int idProyecto)
+        {
+            try
+            {
+                using (_conexion = new SqlConnection(StringConexion))
+                {
+                    _conexion.Open();
+                    using (_command = new SqlCommand("[Sp_Cancelar_Tareas_Proyecto]", _conexion))
+                    {
+                        _command.CommandType = CommandType.StoredProcedure;
+                        _command.Parameters.AddWithValue("@IdProyecto", idProyecto);
+                        _command.ExecuteNonQuery(); // Ejecuta la actualización en la base de datos
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error al cancelar tareas del proyecto: {ex.Message}");
+            }
+        }
+
+
+        public void LiberarRecursos(int idProyecto)
+        {
+            try
+            {
+                using (_conexion = new SqlConnection(StringConexion))
+                {
+                    _conexion.Open();
+                    using (_command = new SqlCommand("[Sp_Liberar_Recursos_Proyecto]", _conexion))
+                    {
+                        _command.CommandType = CommandType.StoredProcedure;
+                        _command.Parameters.AddWithValue("@IdProyecto", idProyecto);
+                        _command.ExecuteNonQuery(); // Actualiza los recursos 
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error al liberar recursos del proyecto: {ex.Message}");
+            }
+        }
+
 
 
         #endregion

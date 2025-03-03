@@ -139,6 +139,7 @@
             // 
             // cb_EstadoRecurso
             // 
+            this.cb_EstadoRecurso.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cb_EstadoRecurso.FormattingEnabled = true;
             this.cb_EstadoRecurso.Items.AddRange(new object[] {
             "Activo",
@@ -169,6 +170,7 @@
             // 
             // cb_tipoRecurso
             // 
+            this.cb_tipoRecurso.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cb_tipoRecurso.FormattingEnabled = true;
             this.cb_tipoRecurso.Items.AddRange(new object[] {
             "Material",
@@ -212,9 +214,9 @@
             this.label_telefono.ForeColor = System.Drawing.SystemColors.Control;
             this.label_telefono.Location = new System.Drawing.Point(343, 245);
             this.label_telefono.Name = "label_telefono";
-            this.label_telefono.Size = new System.Drawing.Size(94, 16);
+            this.label_telefono.Size = new System.Drawing.Size(168, 16);
             this.label_telefono.TabIndex = 7;
-            this.label_telefono.Text = "Descripción:";
+            this.label_telefono.Text = "Descripción (opcional):";
             // 
             // incioLabel
             // 
@@ -226,7 +228,6 @@
             this.incioLabel.Size = new System.Drawing.Size(160, 16);
             this.incioLabel.TabIndex = 3;
             this.incioLabel.Text = "Fecha de adquisición:";
-            this.incioLabel.Click += new System.EventHandler(this.incioLabel_Click);
             // 
             // FrmAddRecursos
             // 

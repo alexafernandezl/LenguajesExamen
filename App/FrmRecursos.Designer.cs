@@ -37,6 +37,7 @@
             this.editarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel3 = new System.Windows.Forms.Panel();
             this.pb_CerrarEmpleados = new System.Windows.Forms.PictureBox();
+            this.txt_buscar = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -54,7 +55,7 @@
             // 
             // btn_Agregar
             // 
-            this.btn_Agregar.Location = new System.Drawing.Point(370, 12);
+            this.btn_Agregar.Location = new System.Drawing.Point(369, 12);
             this.btn_Agregar.Name = "btn_Agregar";
             this.btn_Agregar.Size = new System.Drawing.Size(75, 23);
             this.btn_Agregar.TabIndex = 2;
@@ -70,7 +71,6 @@
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.Size = new System.Drawing.Size(609, 389);
             this.dataGridView1.TabIndex = 0;
-            this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
             // 
             // contextMenuStrip1
             // 
@@ -97,6 +97,7 @@
             // panel3
             // 
             this.panel3.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.panel3.Controls.Add(this.txt_buscar);
             this.panel3.Controls.Add(this.btn_Imprimir);
             this.panel3.Controls.Add(this.btn_Agregar);
             this.panel3.Controls.Add(this.pb_CerrarEmpleados);
@@ -116,6 +117,18 @@
             this.pb_CerrarEmpleados.TabStop = false;
             this.pb_CerrarEmpleados.Click += new System.EventHandler(this.CerrarRecursos_Click);
             // 
+            // txt_buscar
+            // 
+            this.txt_buscar.ForeColor = System.Drawing.SystemColors.ControlDark;
+            this.txt_buscar.Location = new System.Drawing.Point(0, 0);
+            this.txt_buscar.Name = "txt_buscar";
+            this.txt_buscar.Size = new System.Drawing.Size(193, 20);
+            this.txt_buscar.TabIndex = 6;
+            this.txt_buscar.Text = "Buscar recurso...";
+            this.txt_buscar.TextChanged += new System.EventHandler(this.txt_buscar_TextChanged);
+            this.txt_buscar.Enter += new System.EventHandler(this.txt_buscar_Enter);
+            this.txt_buscar.Leave += new System.EventHandler(this.txt_buscar_Leave);
+            // 
             // FrmRecursos
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -130,6 +143,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.contextMenuStrip1.ResumeLayout(false);
             this.panel3.ResumeLayout(false);
+            this.panel3.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pb_CerrarEmpleados)).EndInit();
             this.ResumeLayout(false);
 
@@ -145,5 +159,6 @@
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ToolStripMenuItem eliminarToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem editarToolStripMenuItem;
+        private System.Windows.Forms.TextBox txt_buscar;
     }
 }

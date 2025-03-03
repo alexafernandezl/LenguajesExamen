@@ -643,6 +643,46 @@ namespace DAL
             }
         }//Fin de Buscar Recurso por id
 
+
+        public DataTable BuscarRecursoPorNombre(string nombre)
+        {
+            try
+            {
+                _conexion = new SqlConnection(StringConexion);
+                _conexion.Open();
+                _command = new SqlCommand();
+                _command.Connection = _conexion;
+                _command.CommandType = CommandType.StoredProcedure;
+
+                // Si el nombre está vacío, carga todos los recursos
+                if (string.IsNullOrWhiteSpace(nombre))
+                {
+                    _command.CommandText = "[Sp_Recursos]";
+                }
+                else
+                {
+                    _command.CommandText = "[Sp_Buscar_Recurso_Nombre]";
+                    _command.Parameters.AddWithValue("@NombreRecurso", nombre);
+                }
+
+                SqlDataAdapter adapter = new SqlDataAdapter();
+                DataTable datos = new DataTable();
+                adapter.SelectCommand = _command;
+                adapter.Fill(datos);
+
+                _conexion.Close();
+                _conexion.Dispose();
+                _command.Dispose();
+                adapter.Dispose();
+
+                return datos;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }//Fin de Buscar Recurso por nombre
+
         #endregion
         //---------------------------------------------------------------------
         //CRUD Tareas

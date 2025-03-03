@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmPrincipal));
             this.panel1 = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -36,24 +35,17 @@
             this.button3 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
-            this.Foto = new System.Windows.Forms.PictureBox();
             this.panel2 = new System.Windows.Forms.Panel();
             this.panel3 = new System.Windows.Forms.Panel();
             this.panel4 = new System.Windows.Forms.Panel();
-            this.pb_Box = new System.Windows.Forms.PictureBox();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.proyectosToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.recursosToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.tareasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.empleadosToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.reportesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.pb_Box = new System.Windows.Forms.PictureBox();
+            this.Foto = new System.Windows.Forms.PictureBox();
             this.panel1.SuspendLayout();
             this.groupBox1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.Foto)).BeginInit();
             this.panel4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pb_Box)).BeginInit();
-            this.menuStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.Foto)).BeginInit();
             this.SuspendLayout();
             // 
             // panel1
@@ -140,15 +132,6 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click_1);
             // 
-            // Foto
-            // 
-            this.Foto.Image = global::App.Properties.Resources.icons8_male_user_50;
-            this.Foto.Location = new System.Drawing.Point(28, 12);
-            this.Foto.Name = "Foto";
-            this.Foto.Size = new System.Drawing.Size(129, 146);
-            this.Foto.TabIndex = 2;
-            this.Foto.TabStop = false;
-            // 
             // panel2
             // 
             this.panel2.BackColor = System.Drawing.Color.SteelBlue;
@@ -175,6 +158,16 @@
             this.panel4.Size = new System.Drawing.Size(838, 100);
             this.panel4.TabIndex = 3;
             // 
+            // menuStrip1
+            // 
+            this.menuStrip1.BackColor = System.Drawing.Color.SteelBlue;
+            this.menuStrip1.ImageScalingSize = new System.Drawing.Size(48, 48);
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(838, 24);
+            this.menuStrip1.TabIndex = 3;
+            this.menuStrip1.Text = "menuStrip1";
+            // 
             // pb_Box
             // 
             this.pb_Box.Image = global::App.Properties.Resources.icons8_logout_48;
@@ -185,60 +178,14 @@
             this.pb_Box.TabStop = false;
             this.pb_Box.Click += new System.EventHandler(this.pb_Box_Click);
             // 
-            // menuStrip1
+            // Foto
             // 
-            this.menuStrip1.BackColor = System.Drawing.Color.SteelBlue;
-            this.menuStrip1.ImageScalingSize = new System.Drawing.Size(48, 48);
-            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripMenuItem1});
-            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
-            this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(838, 56);
-            this.menuStrip1.TabIndex = 3;
-            this.menuStrip1.Text = "menuStrip1";
-            // 
-            // toolStripMenuItem1
-            // 
-            this.toolStripMenuItem1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.proyectosToolStripMenuItem,
-            this.recursosToolStripMenuItem,
-            this.tareasToolStripMenuItem,
-            this.empleadosToolStripMenuItem,
-            this.reportesToolStripMenuItem});
-            this.toolStripMenuItem1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripMenuItem1.Image")));
-            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(60, 52);
-            // 
-            // proyectosToolStripMenuItem
-            // 
-            this.proyectosToolStripMenuItem.Name = "proyectosToolStripMenuItem";
-            this.proyectosToolStripMenuItem.Size = new System.Drawing.Size(132, 22);
-            this.proyectosToolStripMenuItem.Text = "Proyectos";
-            // 
-            // recursosToolStripMenuItem
-            // 
-            this.recursosToolStripMenuItem.Name = "recursosToolStripMenuItem";
-            this.recursosToolStripMenuItem.Size = new System.Drawing.Size(132, 22);
-            this.recursosToolStripMenuItem.Text = "Recursos";
-            // 
-            // tareasToolStripMenuItem
-            // 
-            this.tareasToolStripMenuItem.Name = "tareasToolStripMenuItem";
-            this.tareasToolStripMenuItem.Size = new System.Drawing.Size(132, 22);
-            this.tareasToolStripMenuItem.Text = "Tareas";
-            // 
-            // empleadosToolStripMenuItem
-            // 
-            this.empleadosToolStripMenuItem.Name = "empleadosToolStripMenuItem";
-            this.empleadosToolStripMenuItem.Size = new System.Drawing.Size(132, 22);
-            this.empleadosToolStripMenuItem.Text = "Empleados";
-            // 
-            // reportesToolStripMenuItem
-            // 
-            this.reportesToolStripMenuItem.Name = "reportesToolStripMenuItem";
-            this.reportesToolStripMenuItem.Size = new System.Drawing.Size(132, 22);
-            this.reportesToolStripMenuItem.Text = "Reportes";
+            this.Foto.Image = global::App.Properties.Resources.x_icono_8206_128;
+            this.Foto.Location = new System.Drawing.Point(28, 12);
+            this.Foto.Name = "Foto";
+            this.Foto.Size = new System.Drawing.Size(129, 146);
+            this.Foto.TabIndex = 2;
+            this.Foto.TabStop = false;
             // 
             // FrmPrincipal
             // 
@@ -256,12 +203,10 @@
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.groupBox1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.Foto)).EndInit();
             this.panel4.ResumeLayout(false);
             this.panel4.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pb_Box)).EndInit();
-            this.menuStrip1.ResumeLayout(false);
-            this.menuStrip1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.Foto)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -279,13 +224,7 @@
         private System.Windows.Forms.Button btn_Empleados;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.MenuStrip menuStrip1;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.ToolStripMenuItem proyectosToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem recursosToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem tareasToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem empleadosToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem reportesToolStripMenuItem;
         private System.Windows.Forms.PictureBox pb_Box;
     }
 }

@@ -63,6 +63,16 @@ namespace App.Properties {
         /// <summary>
         ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap centro_comercial {
+            get {
+                object obj = ResourceManager.GetObject("centro-comercial", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap icons8_exit_32 {
             get {
                 object obj = ResourceManager.GetObject("icons8-exit-32", resourceCulture);

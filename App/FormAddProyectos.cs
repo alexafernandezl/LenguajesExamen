@@ -95,6 +95,7 @@ namespace App
                     cb_Estado.Items.Add("Cancelado");
                     break;
                 case "Cancelado":
+                    cb_Estado.Items.Add("Cancelado");
                     break; // No permite cambios
             }
 
